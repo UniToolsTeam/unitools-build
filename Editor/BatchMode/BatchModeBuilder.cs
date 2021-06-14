@@ -9,11 +9,6 @@ namespace UniTools.Build
 {
     public static class BatchModeBuilder
     {
-        [CommandLineParameter] private static int MyParam0 = 1;
-        [CommandLineParameter] private static int MyParam1 = 2;
-        private static int MyParam2 = default;
-        private static int MyParam3 = default;
-
         public static async void Execute()
         {
             if (!Application.isBatchMode)
