@@ -7,6 +7,10 @@ This packages is a core for the configurable build pipeline using Unity Editor.
 - Composite pipelines to build several targets simultaneously 
 - Run pipelines from the editor and batch mode
 
+# Dependencies
+- [UniTools CLI](https://github.com/Rinal/unitools-cli)
+- [UniTools IO](https://github.com/Rinal/unitools-io)
+
 # Installation
 
 ### Download
@@ -15,12 +19,12 @@ This packages is a core for the configurable build pipeline using Unity Editor.
 ### Unity Package Manager (UPM)
 
 > You will need to have git installed and set in your system PATH.
-> This package has deppendencies
+
+> Check package [dependencies](https://github.com/Rinal/unitools-build/blob/master/package.json)
 
 Add the following to `Packages/manifest.json`:
 
 ```
-json
 {
   "dependencies": {
     "com.unitools.cli": "https://github.com/Rinal/unitools-cli.git#x.x.x",
