@@ -1,0 +1,21 @@
+{
+  "displayName": "UniTools.Build",
+  "name": "com.unitools.build",
+  "version": "0.0.0",
+  "unity": "2019.1",
+  "description": "AdvancedBuildPipeline",
+  "keywords": [
+    "unity",
+    "unity3d",
+    "cli",
+    "CI",
+    "CD",
+    "C#"
+  ],
+  "category": "Libraries",
+  "type": "library",
+  "dependencies": {
+    "com.unitools.cli": "0.0.0",
+    "com.unitools.io": "0.0.0"
+  }
+}
