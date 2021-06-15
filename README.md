@@ -23,9 +23,9 @@ Add the following to `Packages/manifest.json`:
 json
 {
   "dependencies": {
-    "com.unitools.cli": "https://github.com/Rinal/unitools-cli.git#0.x.x",
-    "com.unitools.io": "https://github.com/Rinal/unitools-io.git#0.x.x",
-    "com.unitools.build": "https://github.com/Rinal/unitools-build.git#0.x.x",
+    "com.unitools.cli": "https://github.com/Rinal/unitools-cli.git#x.x.x",
+    "com.unitools.io": "https://github.com/Rinal/unitools-io.git#x.x.x",
+    "com.unitools.build": "https://github.com/Rinal/unitools-build.git#x.x.x",
     "...": "..."
   }
 }
