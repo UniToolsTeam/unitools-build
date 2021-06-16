@@ -22,7 +22,7 @@ This packages is a core for the configurable build pipeline using Unity Editor.
 
 > Check package [dependencies](https://github.com/Rinal/unitools-build/blob/master/package.json)
 
-Add the following to `Packages/manifest.json`:
+Add the following to `Packages/manifest.json` where x.x.x the version (tag) check [Latest Releases](../../releases/latest):
 
 ```
 {
