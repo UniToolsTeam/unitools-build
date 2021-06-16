@@ -13,11 +13,11 @@ This packages is a core for the configurable build pipeline using Unity Editor.
 
 # Related packages
 Those packages include functionality to customize your pipeline for different platforms. Check those packages before creating custom build steps, probably, desired functionality already created. :)
-- [UniTools Build iOS]()
-- [UniTools Build Android]()
-- [UniTools Build Defines]()
-- [UniTools Build Versioning Semantic]()
-- [UniTools Build AppCenter]()
+- [UniTools Build iOS](https://github.com/Rinal/unitools-build-ios)
+- [UniTools Build Android](https://github.com/Rinal/unitools-build-android)
+- [UniTools Build Defines](https://github.com/Rinal/unitools-build-defines)
+- [UniTools Build AppCenter](https://github.com/Rinal/unitools-build-appcenter)
+- [UniTools Build Versioning Semantic](https://github.com/Rinal/unitools-build-versioning-semantic)
 
 # Installation
 
@@ -51,13 +51,17 @@ There are several types of steps:
 - Build Steps. Creates a build artifact.
 - Post Build Steps. Executed after the build phase. 
 
-To create a build pipeline call UniTools/Build/Pipeline from the Create Asset menu. (ADD SCREANSHOT).
+To create a build pipeline call **UniTools/Build/Pipeline** from the **Create Asset** menu.
+<img width="759" alt="image" src="https://user-images.githubusercontent.com/3504465/122220053-a86dbb00-ceb8-11eb-9f2c-85442573aaa8.png">
 
-To Run a pipeline from the Unity Editor call Run command from the Context Menu (ADD SCREEANSHOT).
+To Run a pipeline from the Unity Editor call **Run** command from the **Context Menu**.
+<img width="562" alt="image" src="https://user-images.githubusercontent.com/3504465/122220682-3cd81d80-ceb9-11eb-9f07-2a453c82b1b6.png">
 
 To see all pipelines in the current project go to the ProjectSettings/UniTools/Build tab (ADD SCREEANSHOT).
+<img width="712" alt="image" src="https://user-images.githubusercontent.com/3504465/122220999-89bbf400-ceb9-11eb-90e9-b25d6a77e41e.png">
+
 ## Build Steps
-Before create a custom build step make sure that this is not exist at [Related Packages](). 
+Before create a custom build step make sure that this is not exist at [Related Packages](#related-packages). 
 To create a custom build step ScriptablePostBuildStep or ScriptablePreBuildStep base class should be used. Example:
 
 ```
@@ -67,7 +71,7 @@ menuName = nameof(UniTools) + "/Build/Steps" + "/Post/Wait"
 )]
 public sealed class WaitPostBuildStep : ScriptablePostBuildStep
 {
-[SerializeField] private int m_seconds = 1;
+    [SerializeField] private int m_seconds = 1;
 
     public override async Task Execute(string pathToBuiltProject)
     {
@@ -83,4 +87,4 @@ public sealed class WaitPostBuildStep : ScriptablePostBuildStep
     }
 }
 ```
-With CreateAssetMenu attribute can be created as a Scriptable Object in Unity Editor and added to the Build Pipeline.(ADD SCREEANSHOT). 
+With CreateAssetMenu attribute the build step can be created as a Scriptable Object in Unity Editor and added to the Build Pipeline.
