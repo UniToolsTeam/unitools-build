@@ -57,7 +57,7 @@ To create a build pipeline call **UniTools/Build/Pipeline** from the **Create As
 To Run a pipeline from the Unity Editor call **Run** command from the **Context Menu**.
 <img width="562" alt="image" src="https://user-images.githubusercontent.com/3504465/122220682-3cd81d80-ceb9-11eb-9f07-2a453c82b1b6.png">
 
-To see all pipelines in the current project go to the ProjectSettings/UniTools/Build tab (ADD SCREEANSHOT).
+To see all pipelines in the current project go to the ProjectSettings/UniTools/Build tab.
 <img width="712" alt="image" src="https://user-images.githubusercontent.com/3504465/122220999-89bbf400-ceb9-11eb-90e9-b25d6a77e41e.png">
 
 ## Build Steps
