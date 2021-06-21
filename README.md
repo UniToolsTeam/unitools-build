@@ -8,16 +8,16 @@ This packages is a core for the configurable build pipeline using Unity Editor.
 - Run pipelines from the editor and batch mode
 
 # Dependencies
-- [UniTools CLI](https://github.com/Rinal/unitools-cli)
-- [UniTools IO](https://github.com/Rinal/unitools-io)
+- [UniTools CLI](https://github.com/UniToolsTeam/unitools-cli)
+- [UniTools IO](https://github.com/UniToolsTeam/unitools-io)
 
 # Related packages
 Those packages include functionality to customize your pipeline for different platforms. Check those packages before creating custom build steps, probably, desired functionality already created. :)
-- [UniTools Build iOS](https://github.com/Rinal/unitools-build-ios)
-- [UniTools Build Android](https://github.com/Rinal/unitools-build-android)
-- [UniTools Build Defines](https://github.com/Rinal/unitools-build-defines)
-- [UniTools Build AppCenter](https://github.com/Rinal/unitools-build-appcenter)
-- [UniTools Build Versioning Semantic](https://github.com/Rinal/unitools-build-versioning-semantic)
+- [UniTools Build iOS](https://github.com/UniToolsTeam/unitools-build-ios)
+- [UniTools Build Android](https://github.com/UniToolsTeam/unitools-build-android)
+- [UniTools Build Defines](https://github.com/UniToolsTeam/unitools-build-defines)
+- [UniTools Build AppCenter](https://github.com/UniToolsTeam/unitools-build-appcenter)
+- [UniTools Build Versioning Semantic](https://github.com/UniToolsTeam/unitools-build-versioning-semantic)
 
 # Installation
 
@@ -35,9 +35,9 @@ Add the following to `Packages/manifest.json` where x.x.x the version (tag) chec
 ```
 {
   "dependencies": {
-    "com.unitools.cli": "https://github.com/Rinal/unitools-cli.git#x.x.x",
-    "com.unitools.io": "https://github.com/Rinal/unitools-io.git#x.x.x",
-    "com.unitools.build": "https://github.com/Rinal/unitools-build.git#x.x.x",
+    "com.unitools.cli": "https://github.com/UniToolsTeam/unitools-cli.git#x.x.x",
+    "com.unitools.io": "https://github.com/UniToolsTeam/unitools-io.git#x.x.x",
+    "com.unitools.build": "https://github.com/UniToolsTeam/unitools-build.git#x.x.x",
     "...": "..."
   }
 }
