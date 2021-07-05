@@ -15,7 +15,7 @@
   "category": "Libraries",
   "type": "library",
   "dependencies": {
-    "com.unitools.cli": "0.0.0",
+    "com.unitools.cli": "0.0.1-preview",
     "com.unitools.io": "0.0.0"
   }
 }
