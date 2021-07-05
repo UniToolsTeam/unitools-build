@@ -33,7 +33,7 @@ namespace UniTools.Build
 
                     if (m_preBuild[i] == null || m_preBuild[i].Step == null)
                     {
-                        Debug.LogWarning($"{nameof(ScriptablePreBuildPipeline)}: The at index {i} is null!");
+                        Debug.LogWarning($"{nameof(ScriptablePreBuildPipeline)}: The step at index {i} is null!");
 
                         continue;
                     }

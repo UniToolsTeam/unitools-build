@@ -37,7 +37,7 @@ namespace UniTools.Build
                     EditorUtility.ClearProgressBar();
                     if (m_postBuild[i] == null || m_postBuild[i].Step == null)
                     {
-                        Debug.LogWarning($"{nameof(ScriptablePostBuildPipeline)}: The at index {i} is null!");
+                        Debug.LogWarning($"{nameof(ScriptablePostBuildPipeline)}: The step at index {i} is null!");
 
                         continue;
                     }
