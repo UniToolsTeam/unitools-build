@@ -26,7 +26,7 @@ namespace UniTools.Build
 
             try
             {
-                await PreBuild();
+                await this.PreBuild();
 
                 foreach (BuildPipeline pipeline in m_pipelines)
                 {

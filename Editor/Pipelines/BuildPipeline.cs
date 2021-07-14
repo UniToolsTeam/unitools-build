@@ -22,7 +22,7 @@ namespace UniTools.Build
 
             try
             {
-                await PreBuild();
+                await this.PreBuild();
                 BuildReport report = await Build();
                 BuildSummary summary = report.summary;
                 if (summary.result == BuildResult.Failed)
@@ -31,7 +31,7 @@ namespace UniTools.Build
                     throw new Exception($"{nameof(BuildPipeline)}: {name} Build failed!");
                 }
 
-                await PostBuild(summary.outputPath);
+                await this.PostBuild(summary.outputPath);
             }
             catch (Exception e)
             {
