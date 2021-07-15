@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace UniTools.Build
@@ -14,9 +15,6 @@ namespace UniTools.Build
 
         [SerializeField] private PreBuildStep[] m_preBuild = default;
 
-        public PreBuildStep[] PreBuildSteps
-        {
-            get { return m_preBuild; }
-        }
-    }  
+        public IEnumerable<PreBuildStep> PreBuildSteps => m_preBuild;
+    }
 }

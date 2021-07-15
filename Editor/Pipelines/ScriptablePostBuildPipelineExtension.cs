@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -8,7 +9,9 @@ namespace UniTools.Build
     {
         public static async Task PostBuild(this BuildPipeline pipeline, string pathToBuiltProject)
         {
-            if (pipeline.PostBuildSteps == null || pipeline.PostBuildSteps.Length == 0)
+            ScriptablePostBuildPipeline.PostBuildStep[] postBuildSteps = pipeline.PostBuildSteps.ToArray();
+
+            if (pipeline.PostBuildSteps == null || postBuildSteps.Length == 0)
             {
                 Debug.Log($"{nameof(ScriptablePostBuildPipeline)}: no any post build steps");
 
@@ -19,28 +22,28 @@ namespace UniTools.Build
             {
                 BuildDiagnostics buildDiagnostics = new BuildDiagnostics(nameof(ScriptablePostBuildPipeline));
 
-                for (int i = 0; i < pipeline.PostBuildSteps.Length; i++)
+                for (int i = 0; i < postBuildSteps.Length; i++)
                 {
                     EditorUtility.ClearProgressBar();
-                    if (pipeline.PostBuildSteps[i] == null || pipeline.PostBuildSteps[i].Step == null)
+                    if (postBuildSteps[i] == null || postBuildSteps[i].Step == null)
                     {
                         Debug.LogWarning($"{nameof(ScriptablePostBuildPipeline)}: The step at index {i} is null!");
 
                         continue;
                     }
 
-                    EditorUtility.DisplayProgressBar($"Post Build ({i + 1}/{pipeline.PostBuildSteps.Length})...", $"{pipeline.PostBuildSteps[i].Step.name} ", i / (float)pipeline.PostBuildSteps.Length);
+                    EditorUtility.DisplayProgressBar($"Post Build ({i + 1}/{postBuildSteps.Length})...", $"{postBuildSteps[i].Step.name} ", i / (float)postBuildSteps.Length);
 
-                    if (pipeline.PostBuildSteps[i].Skip)
+                    if (postBuildSteps[i].Skip)
                     {
-                        Debug.LogWarning($"{nameof(ScriptablePostBuildPipeline)}: The {pipeline.PostBuildSteps[i].Step.name} was skipped!");
+                        Debug.LogWarning($"{nameof(ScriptablePostBuildPipeline)}: The {postBuildSteps[i].Step.name} was skipped!");
 
                         continue;
                     }
 
-                    buildDiagnostics.StartTrackingStep(pipeline.PostBuildSteps[i].Step.name);
+                    buildDiagnostics.StartTrackingStep(postBuildSteps[i].Step.name);
 
-                    await pipeline.PostBuildSteps[i].Step.Execute(pathToBuiltProject);
+                    await postBuildSteps[i].Step.Execute(pathToBuiltProject);
 
                     buildDiagnostics.StopTrackingStep();
                 }
