@@ -6,7 +6,7 @@ namespace UniTools.Build
 {
     public static class ScriptablePostBuildPipelineExtension
     {
-        public static async Task PostBuild(this ScriptablePostBuildPipeline pipeline, string pathToBuiltProject)
+        public static async Task PostBuild(this BuildPipeline pipeline, string pathToBuiltProject)
         {
             if (pipeline.PostBuildSteps == null || pipeline.PostBuildSteps.Length == 0)
             {
@@ -38,9 +38,11 @@ namespace UniTools.Build
                         continue;
                     }
 
-                    buildDiagnostics.StartTracking(pipeline.PostBuildSteps[i].Step.name);
+                    buildDiagnostics.StartTrackingStep(pipeline.PostBuildSteps[i].Step.name);
+
                     await pipeline.PostBuildSteps[i].Step.Execute(pathToBuiltProject);
-                    buildDiagnostics.Stop();
+
+                    buildDiagnostics.StopTrackingStep();
                 }
             }
             finally

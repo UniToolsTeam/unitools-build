@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace UniTools.Build
 {
@@ -12,7 +12,7 @@ namespace UniTools.Build
         public string Name = default;
         public string StartTime = default;
         public string EndTime = default;
-        public double Duration = default;
+        public enum State { Success, Failed }
         public StepData(string name)
         {
             Name = name;
@@ -22,56 +22,53 @@ namespace UniTools.Build
     public class BuildDiagnostics
     {
         private Stopwatch m_stopwatch = default;
-        private List<StepData> m_diagnisticsData = new List<StepData>();
+        private List<StepData> m_buildDiagnisticsData = new List<StepData>();
         private StepData m_stepDiagnisticsData = default;
 
-        private BuildPipeline m_pipeline = default;
         private string m_pipelineName = default;
 
         //TODO: Save information about pre/post steps in 1 file
-        public BuildDiagnostics(BuildPipeline pipeline)
-        {
-            m_pipeline = pipeline;
-        }
-
         public BuildDiagnostics(string pipelineName)
         {
             m_pipelineName = pipelineName;
         }
 
-        //TODO: Normalize time format
-        public void StartTracking(string name)
+        public void StartTrackingStep(string name)
         {
             m_stepDiagnisticsData = new StepData(name);
             m_stepDiagnisticsData.StartTime = DateTime.Now.ToString();
             m_stopwatch = Stopwatch.StartNew();
         }
 
-        public void Stop()
+        public void StopTrackingStep()
         {
-            if (m_stepDiagnisticsData != null)
+            if (m_stepDiagnisticsData == null)
             {
-                DateTime endTime = DateTime.Now;
-                m_stepDiagnisticsData.EndTime = endTime.ToString();
-
-                m_stopwatch.Stop();
-                m_stopwatch.Reset();
-
-                DateTime startTime = DateTime.Parse(m_stepDiagnisticsData.StartTime);
-                m_stepDiagnisticsData.Duration = endTime.Subtract(startTime).TotalMilliseconds;
-                m_diagnisticsData.Add(m_stepDiagnisticsData);
-
-                SaveToFile(m_diagnisticsData);
+                return;
             }
+
+            m_stepDiagnisticsData.EndTime = DateTime.Now.ToString();
+            m_buildDiagnisticsData.Add(m_stepDiagnisticsData);
+
+            ResetStopwatch();
+
+            SaveStepsInfo(m_buildDiagnisticsData);
         }
 
-        //TODO: Select correct location path 
-        public void SaveToFile(List<StepData> data)
+        private void ResetStopwatch()
+        {
+            m_stopwatch.Stop();
+            m_stopwatch.Reset();
+        }
+
+        private void SaveStepsInfo(List<StepData> data)
         {
             string json = JsonHelper.ToJson(data, true);
             string fileName = $"/{m_pipelineName}Diagnostics.json";
+            string path = $"{Application.dataPath.Replace("/Assets", string.Empty)}/Diagnostics";
+            Directory.CreateDirectory(path);
 
-            System.IO.File.WriteAllText(Application.dataPath + fileName, json);
+            File.WriteAllText(path + fileName, json);
         }
     }
 }

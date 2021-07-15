@@ -7,6 +7,7 @@ namespace UniTools.Build
 {
     public static class ScriptablePreBuildPipelineExtension
     {
+        //TODO: Change to BuildPipeline extension and adjust composite build pipeline for it
         public static async Task PreBuild(this ScriptablePreBuildPipeline pipeline)
         {
             if (pipeline.PreBuildSteps == null || pipeline.PreBuildSteps.Length == 0)
@@ -37,10 +38,12 @@ namespace UniTools.Build
                         Debug.LogWarning($"{nameof(ScriptablePreBuildPipeline)}: The {pipeline.PreBuildSteps[i].Step.name} was skipped!");
                         continue;
                     }
-                    buildDiagnostics.StartTracking(pipeline.PreBuildSteps[i].Step.name);
+
+                    buildDiagnostics.StartTrackingStep(pipeline.PreBuildSteps[i].Step.name);
 
                     await pipeline.PreBuildSteps[i].Step.Execute();
-                    buildDiagnostics.Stop();
+
+                    buildDiagnostics.StopTrackingStep();
                 }
             }
             catch (Exception e)
