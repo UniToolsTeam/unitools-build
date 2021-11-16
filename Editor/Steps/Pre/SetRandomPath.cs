@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Threading.Tasks;
 using UniTools.IO;
 using UnityEngine;
@@ -10,11 +12,18 @@ namespace UniTools.Build
     )]
     public sealed class SetRandomPath : ScriptablePreBuildStep
     {
-        [SerializeField] private RandomPathSettings m_randomPathSettings = default;
+        [SerializeField] private BaseScriptablePath m_parentPath = default;
+        [SerializeField] private BaseScriptablePath m_buildPath = default;
+
+        [SerializeField] private BaseScriptablePath m_randomPath = default;
 
         public override async Task Execute()
         {
-            m_randomPathSettings.GenerateRandomId();
+            m_randomPath.Value = Path.Combine(
+                                     m_parentPath.ToString(),
+                                     Guid.NewGuid().ToString(),
+                                     m_buildPath.ToString());
+
             await Task.CompletedTask;
         }
     }
