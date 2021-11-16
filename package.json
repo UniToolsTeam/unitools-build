@@ -1,21 +1,21 @@
 {
   "displayName": "UniTools.Build",
   "name": "com.unitools.build",
-  "version": "0.0.0",
+  "version": "0.0.1-preview",
   "unity": "2019.1",
-  "description": "AdvancedBuildPipeline",
+  "description": "Customizable Build Pipeline for Unity3D",
   "keywords": [
-    "unity",
+    "build",
     "unity3d",
-    "cli",
-    "CI",
-    "CD",
-    "C#"
+    "ci-cd",
+    "build-tool",
+    "ci-cd-pipeline",
+    "unity-tool"
   ],
   "category": "Libraries",
   "type": "library",
   "dependencies": {
-    "com.unitools.cli": "0.0.0",
-    "com.unitools.io": "0.0.0"
+    "com.unitools.cli": "0.0.1-preview",
+    "com.unitools.io": "0.0.1-preview"
   }
 }
