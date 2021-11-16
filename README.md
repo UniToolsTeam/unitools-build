@@ -13,6 +13,7 @@ This packages is a core for the configurable build pipeline using Unity Editor.
 
 # Related packages
 Those packages include functionality to customize your pipeline for different platforms. Check those packages before creating custom build steps, probably, desired functionality already created. :)
+- [UniTools Build Standalone](https://github.com/UniToolsTeam/unitools-build-standalone)
 - [UniTools Build iOS](https://github.com/UniToolsTeam/unitools-build-ios)
 - [UniTools Build Android](https://github.com/UniToolsTeam/unitools-build-android)
 - [UniTools Build Defines](https://github.com/UniToolsTeam/unitools-build-defines)
