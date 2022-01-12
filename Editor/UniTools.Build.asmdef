@@ -2,8 +2,7 @@
     "name": "UniTools.Build",
     "rootNamespace": "UniTools.Build",
     "references": [
-        "GUID:1ec9bc22e09f9407db909c86976e6505",
-        "GUID:e5a4c5b37842d4d11af3670f2f93f994"
+        "GUID:1ec9bc22e09f9407db909c86976e6505"
     ],
     "includePlatforms": [
         "Editor"
