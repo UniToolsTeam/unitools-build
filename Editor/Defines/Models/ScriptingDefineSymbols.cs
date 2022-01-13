@@ -20,6 +20,12 @@ namespace UniTools.Defines
 
         public override string ToString()
         {
+            if (m_defines.Count == 0)
+            {
+                return string.Empty;
+            }
+            
+            
             StringBuilder builder = new StringBuilder();
 
             int last = m_defines.Count - 1;
