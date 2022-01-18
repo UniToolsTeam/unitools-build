@@ -5,7 +5,10 @@ using UnityEngine;
 
 namespace UniTools.Build
 {
-    public abstract class ScriptablePreBuildStep : ScriptableObject
+    /// <summary>
+    /// This type of steps should be user to create any custom behavior for the build pipeline
+    /// </summary>
+    public abstract class ScriptableCustomBuildStep : ScriptableObject
     {
         public abstract Task Execute();
 

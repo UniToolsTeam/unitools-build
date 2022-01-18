@@ -1,8 +1,8 @@
-using System;
-using System.Threading.Tasks;
-using UnityEngine;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using UniTools.IO;
+using UnityEngine;
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 #endif
@@ -13,14 +13,15 @@ namespace UniTools.Build.iOS
         fileName = nameof(ModifyInfoPlist),
         menuName = nameof(UniTools) + "/Build/Steps/" + nameof(iOS) + "/Post/" + nameof(ModifyInfoPlist)
     )]
-    public sealed class ModifyInfoPlist : ScriptablePostBuildStep
+    public sealed class ModifyInfoPlist : ScriptableCustomBuildStep
     {
+        [SerializeField] private PathProperty m_pathToXCodeProject = default;
         [SerializeField] private BoolPlistElement[] m_bool = default;
         [SerializeField] private FloatPlistElement[] m_float = default;
         [SerializeField] private IntPlistElement[] m_int = default;
         [SerializeField] private StringPlistElement[] m_string = default;
 
-        public override async Task Execute(string pathToBuiltProject)
+        public override async Task Execute()
         {
             await Task.CompletedTask;
 
@@ -46,7 +47,7 @@ namespace UniTools.Build.iOS
                 elements.AddRange(m_string);
             }
 
-            string plistPath = Path.Combine(pathToBuiltProject, "Info.plist");
+            string plistPath = Path.Combine(m_pathToXCodeProject.ToString(), "Info.plist");
             PlistDocument plist = new PlistDocument();
             plist.ReadFromString(File.ReadAllText(plistPath));
             foreach (IPlistElement element in elements)

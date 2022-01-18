@@ -19,7 +19,7 @@ namespace UniTools.Build.iOS
         [SerializeField] private string m_scheme = "Unity-iPhone";
         [SerializeField] private bool m_useModernBuildSystem = true;
 
-        public override async Task Execute(string pathToBuiltProject)
+        public override async Task Execute()
         {
             await Task.CompletedTask;
 

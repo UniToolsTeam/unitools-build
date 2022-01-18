@@ -9,7 +9,7 @@ namespace UniTools.Build.Android
         fileName = nameof(SetAlias),
         menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Android) + "/Pre/" + nameof(SetAlias)
     )]
-    public sealed class SetAlias : ScriptablePreBuildStep
+    public sealed class SetAlias : ScriptableCustomBuildStep
     {
         [SerializeField] private string m_alias = default;
         [SerializeField] private string m_password = default;

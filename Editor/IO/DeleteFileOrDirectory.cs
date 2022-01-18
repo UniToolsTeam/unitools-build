@@ -9,7 +9,7 @@ namespace UniTools.Build
         fileName = nameof(DeleteFileOrDirectory),
         menuName = nameof(UniTools) + "/Build/Steps/Pre/" + nameof(DeleteFileOrDirectory)
     )]
-    public sealed class DeleteFileOrDirectory : ScriptablePreBuildStep
+    public sealed class DeleteFileOrDirectory : ScriptableCustomBuildStep
     {
         [SerializeField] private PathProperty m_path = default;
 

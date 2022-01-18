@@ -11,12 +11,12 @@ namespace UniTools.IO
         fileName = nameof(CreateZipArchiveStep),
         menuName = nameof(UniTools) + "/" + nameof(IO) + "/" + nameof(CreateZipArchiveStep)
     )]
-    public sealed class CreateZipArchiveStep : ScriptablePostBuildStep
+    public sealed class CreateZipArchiveStep : ScriptableCustomBuildStep
     {
         [SerializeField, Tooltip("The location of the folder that needs to be compressed.")] private PathProperty m_directory = default;
         [SerializeField, Tooltip("The name of the created archive (include extensions. Ex: my.zip).")] private string m_archiveFileName = default;
 
-        public override async Task Execute(string pathToBuiltProject)
+        public override async Task Execute()
         {
             if (string.IsNullOrWhiteSpace(m_archiveFileName))
             {
@@ -44,9 +44,6 @@ namespace UniTools.IO
                 throw new Exception($"{nameof(CreateZipArchiveStep)}: failed due to directory {m_directory} doesn't exist!");
             }
 
-            
-            
-            
             // Debug.Log(Assembly.GetExecutingAssembly().De);
             // Debug.Log(Environment.CurrentDirectory);
             // // Debug.Log(Application.dataPath);

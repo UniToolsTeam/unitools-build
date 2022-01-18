@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace UniTools.Build.iOS
 {
-    public abstract class IosPostBuildStep : ScriptablePostBuildStep
+    public abstract class IosPostBuildStep : ScriptableCustomBuildStep
     {
         [SerializeField, Tooltip("Can be found at Apple Developer Console")] private string m_teamId = string.Empty;
         [SerializeField] private string m_provisioningProfileName = default;

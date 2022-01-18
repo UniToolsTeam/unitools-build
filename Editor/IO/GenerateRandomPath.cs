@@ -10,7 +10,7 @@ namespace UniTools.Build
         fileName = nameof(GenerateRandomPath),
         menuName = nameof(UniTools) + "/Build/Steps/Pre/" + nameof(GenerateRandomPath)
     )]
-    public sealed class GenerateRandomPath : ScriptablePreBuildStep
+    public sealed class GenerateRandomPath : ScriptableCustomBuildStep
     {
         [SerializeField] private BaseScriptablePath m_initialPath = default;
         [SerializeField] private BaseScriptablePath m_resultPath = default;

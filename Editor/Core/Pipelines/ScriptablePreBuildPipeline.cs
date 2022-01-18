@@ -10,7 +10,7 @@ namespace UniTools.Build
         [Serializable]
         private sealed class PreBuildStep
         {
-            public ScriptablePreBuildStep Step = default;
+            public ScriptableCustomBuildStep Step = default;
             public bool Skip = false;
         }
 

@@ -8,7 +8,7 @@ namespace UniTools.Build.Android
         fileName = nameof(SetKeystorePassword),
         menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Android) + "/Pre/" + nameof(SetKeystorePassword)
     )]
-    public sealed class SetKeystorePassword : ScriptablePreBuildStep
+    public sealed class SetKeystorePassword : ScriptableCustomBuildStep
     {
         [SerializeField] private string m_password = default;
 

@@ -8,7 +8,7 @@ namespace UniTools.Build.Android
         fileName = nameof(SetDebugKeystore),
         menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Android) + "/Pre/" + nameof(SetDebugKeystore)
     )]
-    public sealed class SetDebugKeystore : ScriptablePreBuildStep
+    public sealed class SetDebugKeystore : ScriptableCustomBuildStep
     {
         public override async Task Execute()
         {
