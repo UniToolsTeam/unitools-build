@@ -1,14 +1,11 @@
-using System.IO;
-using System.Threading.Tasks;
-using UniTools.CLI;
-using UniTools.IO;
-using UnityEngine;
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
-
 #else
 using System;
 #endif
+using System.Threading.Tasks;
+using UniTools.IO;
+using UnityEngine;
 
 namespace UniTools.Build.iOS
 {
@@ -59,7 +56,7 @@ namespace UniTools.Build.iOS
                 throw new PostBuildStepFailedException($"{nameof(Archive)}: Failed! {result.ToString()}");
             }
 #else
-            throw new Exception($"{nameof(ExportIpa)}: unsupported platform for {m_archivePath}, {m_outputPath}, {m_method}");
+            throw new Exception($"{nameof(ExportIpa)}: unsupported platform for {m_archivePath}, {m_outputPath}, {m_method}, {m_pathToXCodeProject}");
 #endif
         }
     }

@@ -1,11 +1,13 @@
-using System.IO;
-using System.Threading.Tasks;
+#if UNITY_IOS
 using UniTools.CLI;
+using System.IO;
+using UnityEditor.iOS.Xcode;
+#else
+using System;
+#endif
+using System.Threading.Tasks;
 using UniTools.IO;
 using UnityEngine;
-#if UNITY_IOS
-using UnityEditor.iOS.Xcode;
-#endif
 
 namespace UniTools.Build.iOS
 {
@@ -46,7 +48,7 @@ namespace UniTools.Build.iOS
                 throw new PostBuildStepFailedException($"{nameof(Archive)}: Failed! {result.ToString()}");
             }
 #else
-            throw new Exception($"{nameof(UploadToAppStore)}: unsupported platform for {m_archivePath}, {m_outputPath}");
+            throw new Exception($"{nameof(UploadToAppStore)}: unsupported platform for {m_archivePath}, {m_outputPath}, {m_pathToXCodeProject}");
 #endif
         }
     }

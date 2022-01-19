@@ -1,11 +1,13 @@
+#if UNITY_IOS
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor.iOS.Xcode;
+#else
+using System;
+#endif
 using System.Threading.Tasks;
 using UniTools.IO;
 using UnityEngine;
-#if UNITY_IOS
-using UnityEditor.iOS.Xcode;
-#endif
 
 namespace UniTools.Build.iOS
 {
@@ -57,7 +59,7 @@ namespace UniTools.Build.iOS
 
             File.WriteAllText(plistPath, plist.WriteToString());
 #else
-            throw new Exception($"{nameof(ModifyInfoPlist)}: unsupported platform for {m_bool}, {m_float}, {m_int}, {m_string}");
+            throw new Exception($"{nameof(ModifyInfoPlist)}: unsupported platform for {m_bool}, {m_float}, {m_int}, {m_string}, {m_pathToXCodeProject}");
 #endif
         }
     }
