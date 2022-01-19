@@ -23,74 +23,25 @@ namespace UniTools.IO
                 throw new Exception($"{nameof(CreateZipArchiveStep)}: file name is null or empty!");
             }
 
-            var ext = Path.GetExtension(m_archiveFileName);
-            Debug.LogError(ext);
+            string ext = Path.GetExtension(m_archiveFileName);
             if (!ext.Equals(".zip"))
             {
                 throw new Exception($"{nameof(CreateZipArchiveStep)}: invalid file name {m_archiveFileName}!");
             }
-
-            // var dir = Path.Combine(Environment.CurrentDirectory, m_directory.ToString());
-            //
-            // if (!Directory.Exists(dir))
-            // {
-            //     throw new Exception($"{nameof(CreateZipArchiveStep)}: failed due to directory {dir} doesn't exist!");
-            // }
-            //
-            //
 
             if (!Directory.Exists(m_directory.ToString()))
             {
                 throw new Exception($"{nameof(CreateZipArchiveStep)}: failed due to directory {m_directory} doesn't exist!");
             }
 
-            // Debug.Log(Assembly.GetExecutingAssembly().De);
-            // Debug.Log(Environment.CurrentDirectory);
-            // // Debug.Log(Application.dataPath);
-            //
-            // Debug.LogError(m_directory);
-            //
-            // var p = Path.Combine(Environment.CurrentDirectory, m_directory.ToString());
-            // Debug.LogError(p);
-            //
-            // FileAttributes attr = File.GetAttributes(p.ToString());
-            //
-            //
-            // Debug.LogError(attr);
-            //
-            // if (attr.HasFlag(FileAttributes.Directory))
-            // {
-            //     Debug.Log("The target is DIRECTORY");
-            //     // MessageBox.Show("Its a directory");
-            // }
-            // else
-            // {
-            //     Debug.Log("The target is a FILE");
-            //
-            //     // MessageBox.Show("Its a file");
-            // }
-            //
-            //
-            //
-            //
-            //  // Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "ARTIFACTS"));
-            //
-            // return;
-            //
-
-            // tar -czvf archive.zip *   
-            Tar tar = Cli.Tool<Tar>();
-            if (tar == null || !tar.IsInstalled)
+            Zip zip = Cli.Tool<Zip>();
+            if (zip == null || !zip.IsInstalled)
             {
                 throw new ToolNotInstalledException();
             }
 
-            string command = $"-czf {m_archiveFileName} *";
-            // string command = $"-c -f {m_archiveFileName} {m_directory}";
-            // string command = $"-a -c -f {m_archivePath} {m_originalPath}";
-
-            var result = tar.Execute(command, m_directory.ToString());
-
+            string command = $"-r {m_archiveFileName} *";
+            ToolResult result = zip.Execute(command, m_directory.ToString());
             Debug.Log(result);
 
             await Task.CompletedTask;
