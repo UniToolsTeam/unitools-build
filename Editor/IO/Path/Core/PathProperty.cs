@@ -25,15 +25,10 @@ namespace UniTools.IO
             {
                 if (m_scriptablePath == null)
                 {
-                    throw new Exception("Invalid path value!");
+                    return string.Empty;
                 }
 
                 return m_scriptablePath.ToString();
-            }
-
-            if (string.IsNullOrEmpty(m_path))
-            {
-                throw new Exception("Invalid path value!");
             }
 
             return m_path;

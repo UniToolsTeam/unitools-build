@@ -12,14 +12,14 @@ namespace UniTools.Build
     )]
     public sealed class GenerateRandomPath : ScriptableCustomBuildStep
     {
-        [SerializeField] private BaseScriptablePath m_initialPath = default;
-        [SerializeField] private BaseScriptablePath m_resultPath = default;
+        [SerializeField] private PathProperty m_initial = default;
+        [SerializeField] private ScriptablePath m_result = default;
 
         public override async Task Execute()
         {
-            m_resultPath.Value = Path.Combine(
-                                     m_initialPath.ToString(),
-                                     Guid.NewGuid().ToString());
+            m_result.Value = Path.Combine(
+                m_initial.ToString(),
+                Guid.NewGuid().ToString());
 
             await Task.CompletedTask;
         }

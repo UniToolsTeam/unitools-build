@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -10,16 +10,23 @@ namespace UniTools.IO
     )]
     public sealed class CompositeScriptablePath : BaseScriptablePath
     {
-        [SerializeField] private BaseScriptablePath m_parent = default;
+        [SerializeField] private List<PathProperty> m_paths = default;
 
         public override string ToString()
         {
-            if (m_parent == null)
+            if (m_paths == null)
             {
-                throw new Exception("Invalid parent path value!");
+                return string.Empty;
             }
 
-            return Path.Combine(m_parent.ToString(), base.ToString());
+            string p = string.Empty;
+
+            foreach (PathProperty path in m_paths)
+            {
+                p = Path.Combine(p, path.ToString());
+            }
+
+            return p;
         }
     }
 }

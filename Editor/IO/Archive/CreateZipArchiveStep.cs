@@ -14,16 +14,16 @@ namespace UniTools.IO
     public sealed class CreateZipArchiveStep : ScriptableCustomBuildStep
     {
         [SerializeField, Tooltip("The location of the folder that needs to be compressed.")] private PathProperty m_directory = default;
-        [SerializeField, Tooltip("The name of the created archive (include extensions. Ex: my.zip).")] private string m_archiveFileName = default;
+        [SerializeField, Tooltip("The name of the created archive (include extensions. Ex: my.zip).")] private PathProperty m_archiveFileName = default;
 
         public override async Task Execute()
         {
-            if (string.IsNullOrWhiteSpace(m_archiveFileName))
+            if (string.IsNullOrWhiteSpace(m_archiveFileName.ToString()))
             {
                 throw new Exception($"{nameof(CreateZipArchiveStep)}: file name is null or empty!");
             }
 
-            string ext = Path.GetExtension(m_archiveFileName);
+            string ext = Path.GetExtension(m_archiveFileName.ToString());
             if (!ext.Equals(".zip"))
             {
                 throw new Exception($"{nameof(CreateZipArchiveStep)}: invalid file name {m_archiveFileName}!");
