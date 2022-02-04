@@ -13,8 +13,5 @@
     "unity-tool"
   ],
   "category": "Libraries",
-  "type": "library",
-  "dependencies": {
-    "com.unitools.cli": "0.0.1-preview"
-  }
+  "type": "library"
 }
