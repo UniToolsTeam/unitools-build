@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace UniTools.IO
+namespace UniTools.Build
 {
     [CustomPropertyDrawer(typeof(PathProperty))]
     public sealed class PathPropertyDrawer : PropertyDrawer

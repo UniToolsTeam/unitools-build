@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace UniTools.Defines
+namespace UniTools.Build
 {
     public sealed class ScriptingDefineSymbolsProvider : SettingsProvider
     {

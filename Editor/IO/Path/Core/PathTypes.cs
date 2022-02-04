@@ -1,4 +1,4 @@
-namespace UniTools.IO
+namespace UniTools.Build
 {
     public enum PathTypes : byte
     {

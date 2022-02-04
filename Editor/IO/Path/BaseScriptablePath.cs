@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UniTools.IO
+namespace UniTools.Build
 {
     /// <summary>
     /// Created to separate path from other SO

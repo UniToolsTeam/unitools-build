@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace UniTools.IO
+namespace UniTools.Build
 {
     [CustomEditor(typeof(CompositeScriptablePath))]
     public sealed class CompositeScriptablePathEditor : Editor

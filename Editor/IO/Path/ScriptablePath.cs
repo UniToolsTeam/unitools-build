@@ -1,10 +1,10 @@
 using UnityEngine;
 
-namespace UniTools.IO
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(ScriptablePath),
-        menuName = nameof(UniTools) + "/" + nameof(IO) + "/Path"
+        menuName = nameof(UniTools) + "/" + nameof(Build) + "/Path"
     )]
     public sealed class ScriptablePath : BaseScriptablePath
     {

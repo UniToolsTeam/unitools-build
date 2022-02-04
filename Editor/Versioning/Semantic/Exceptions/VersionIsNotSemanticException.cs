@@ -1,6 +1,6 @@
 using System;
 
-namespace UniTools.Build.Versioning.Semantic
+namespace UniTools.Build.Versioning
 {
     public sealed class VersionIsNotSemanticException : Exception
     {

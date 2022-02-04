@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-namespace UniTools.IO
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(CompositeScriptablePath),
-        menuName = nameof(UniTools) + "/" + nameof(IO) + "/Composite Path"
+        menuName = nameof(UniTools) + "/" + nameof(Build) + "/Composite Path"
     )]
     public sealed class CompositeScriptablePath : BaseScriptablePath
     {

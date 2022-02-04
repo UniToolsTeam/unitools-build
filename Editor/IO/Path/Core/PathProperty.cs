@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace UniTools.IO
+namespace UniTools.Build
 {
     [Serializable]
     public sealed class PathProperty

@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace UniTools.IO
+namespace UniTools.Build
 {
     /// <summary>
     /// The path value of the current Unity Project

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace UniTools.Defines
+namespace UniTools.Build
 {
     public sealed class ScriptingDefineSymbolsPresenter
     {

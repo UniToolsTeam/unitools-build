@@ -3,11 +3,11 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace UniTools.Defines
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(ScriptingDefineSymbols),
-        menuName = nameof(UniTools) + "/" + nameof(Defines) + "/" + nameof(ScriptingDefineSymbols)
+        menuName = nameof(UniTools) + "/" + nameof(Build) + "/" + nameof(ScriptingDefineSymbols)
     )]
     public sealed class ScriptingDefineSymbols : ScriptableObject
     {

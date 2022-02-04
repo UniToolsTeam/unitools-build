@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace UniTools.Build.Versioning.Semantic
+namespace UniTools.Build.Versioning
 {
     [CreateAssetMenu(
         fileName = nameof(BumpSemanticBuildValue),
