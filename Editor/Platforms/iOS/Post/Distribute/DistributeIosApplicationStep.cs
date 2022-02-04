@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;

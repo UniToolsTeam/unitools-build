@@ -1,5 +1,4 @@
 #if UNITY_IOS
-using UniTools.CLI;
 using System.IO;
 using UnityEditor.iOS.Xcode;
 #else
