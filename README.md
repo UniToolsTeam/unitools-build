@@ -30,8 +30,6 @@ Add the following to `Packages/manifest.json` where x.x.x the version (tag) chec
 ```json
 {
   "dependencies": {
-    "com.unitools.cli": "https://github.com/UniToolsTeam/unitools-cli.git#x.x.x",
-    "com.unitools.io": "https://github.com/UniToolsTeam/unitools-io.git#x.x.x",
     "com.unitools.build": "https://github.com/UniToolsTeam/unitools-build.git#x.x.x",
     "...": "..."
   }
