@@ -1,6 +1,6 @@
+#if UNITY_IOS
 using System.IO;
 using System.Text.RegularExpressions;
-#if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 #endif
 
@@ -36,7 +36,7 @@ namespace UniTools.Build.iOS
 
             return profile;
 #else
-            throw new Exception($"{nameof(ProvisioningProfile)}: unsupported platform.");
+            throw new System.Exception($"{nameof(ProvisioningProfile)}: unsupported platform.");
 #endif
         }
     }
