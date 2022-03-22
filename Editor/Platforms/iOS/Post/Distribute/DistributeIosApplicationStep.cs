@@ -1,7 +1,7 @@
-using System.IO;
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 #endif
+using System.IO;
 using UnityEngine;
 
 namespace UniTools.Build.iOS
@@ -18,7 +18,7 @@ namespace UniTools.Build.iOS
 
             return Path.Combine(root, fileName);
 #if !UNITY_IOS
-            throw new Exception($"{nameof(DistributeIosApplicationStep)}: unsupported platform for {m_bundleIdentifier}, {m_uploadBitcode}, {m_uploadSymbols}");
+            throw new System.Exception($"{nameof(DistributeIosApplicationStep)}: unsupported platform for {m_bundleIdentifier}, {m_uploadBitcode}, {m_uploadSymbols}");
 #endif
         }
 
