@@ -8,7 +8,7 @@ namespace UniTools.Build.iOS
 {
     [CreateAssetMenu(
         fileName = nameof(BuildXCode),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(iOS) + "/" + nameof(BuildXCode)
+        menuName = MenuPaths.IOS + nameof(BuildXCode)
     )]
     public sealed class BuildXCode : ScriptableBuildStepWithOptions
     {

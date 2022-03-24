@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using UniTools.Build;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -8,7 +7,7 @@ namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(ScriptableBuildStepWithDefines),
-        menuName = nameof(UniTools) + "/Build/Steps/BuildWithDefines"
+        menuName = MenuPaths.Defines + "BuildWithDefines"
     )]
     public sealed class ScriptableBuildStepWithDefines : ScriptablePlatformBuildStep
     {

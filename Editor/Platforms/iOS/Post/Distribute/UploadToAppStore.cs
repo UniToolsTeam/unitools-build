@@ -12,7 +12,7 @@ namespace UniTools.Build.iOS
 {
     [CreateAssetMenu(
         fileName = nameof(UploadToAppStore),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(iOS) + "/Post/" + nameof(UploadToAppStore)
+        menuName = MenuPaths.IOS + nameof(UploadToAppStore)
     )]
     public sealed class UploadToAppStore : DistributeIosApplicationStep
     {

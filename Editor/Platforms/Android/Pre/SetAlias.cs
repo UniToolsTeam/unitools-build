@@ -7,7 +7,7 @@ namespace UniTools.Build.Android
 {
     [CreateAssetMenu(
         fileName = nameof(SetAlias),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Android) + "/Pre/" + nameof(SetAlias)
+        menuName = MenuPaths.Android + nameof(SetAlias)
     )]
     public sealed class SetAlias : ScriptableCustomBuildStep
     {

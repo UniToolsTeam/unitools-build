@@ -7,7 +7,7 @@ namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(CompositeBuildPipeline),
-        menuName = nameof(UniTools) + "/Build/Composite Pipeline"
+        menuName = MenuPaths.Pipelines + "Composite Pipeline"
     )]
     public sealed class CompositeBuildPipeline : ScriptablePreBuildPipeline
     {

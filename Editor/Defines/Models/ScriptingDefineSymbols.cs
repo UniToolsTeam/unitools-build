@@ -7,7 +7,7 @@ namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(ScriptingDefineSymbols),
-        menuName = nameof(UniTools) + "/" + nameof(Build) + "/" + nameof(ScriptingDefineSymbols)
+        menuName = MenuPaths.Defines + "DefineSymbols"
     )]
     public sealed class ScriptingDefineSymbols : ScriptableObject
     {
@@ -24,8 +24,7 @@ namespace UniTools.Build
             {
                 return string.Empty;
             }
-            
-            
+
             StringBuilder builder = new StringBuilder();
 
             int last = m_defines.Count - 1;

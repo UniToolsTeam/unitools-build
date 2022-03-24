@@ -9,7 +9,7 @@ namespace UniTools.Build.iOS
     /// </summary>
     [CreateAssetMenu(
         fileName = nameof(Archive),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(iOS) + "/Post/" + nameof(Archive)
+        menuName = MenuPaths.IOS + nameof(Archive)
     )]
     public sealed class Archive : IosPostBuildStep
     {

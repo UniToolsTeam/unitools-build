@@ -7,7 +7,7 @@ namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(BuildPipeline),
-        menuName = nameof(UniTools) + "/Build/Pipeline"
+        menuName = MenuPaths.Pipelines + "Pipeline"
     )]
     public sealed class BuildPipeline : ScriptablePostBuildPipeline
     {

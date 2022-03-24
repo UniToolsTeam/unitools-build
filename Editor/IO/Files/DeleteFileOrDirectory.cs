@@ -7,7 +7,7 @@ namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(DeleteFileOrDirectory),
-        menuName = nameof(UniTools) + "/Build/Steps/Pre/" + nameof(DeleteFileOrDirectory)
+        menuName = MenuPaths.IO + nameof(DeleteFileOrDirectory)
     )]
     public sealed class DeleteFileOrDirectory : ScriptableCustomBuildStep
     {

@@ -12,7 +12,7 @@ namespace UniTools.Build.iOS
 {
     [CreateAssetMenu(
         fileName = nameof(ExportIpa),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(iOS) + "/Post/" + nameof(ExportIpa)
+        menuName = MenuPaths.IOS + nameof(ExportIpa)
     )]
     public sealed class ExportIpa : DistributeIosApplicationStep
     {

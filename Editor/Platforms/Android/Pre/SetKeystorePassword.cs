@@ -6,7 +6,7 @@ namespace UniTools.Build.Android
 {
     [CreateAssetMenu(
         fileName = nameof(SetKeystorePassword),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Android) + "/Pre/" + nameof(SetKeystorePassword)
+        menuName = MenuPaths.Android + nameof(SetKeystorePassword)
     )]
     public sealed class SetKeystorePassword : ScriptableCustomBuildStep
     {

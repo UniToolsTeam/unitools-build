@@ -6,7 +6,7 @@ namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(CompositeScriptablePath),
-        menuName = nameof(UniTools) + "/" + nameof(Build) + "/Composite Path"
+        menuName = MenuPaths.IO + "Composite Path"
     )]
     public sealed class CompositeScriptablePath : BaseScriptablePath
     {

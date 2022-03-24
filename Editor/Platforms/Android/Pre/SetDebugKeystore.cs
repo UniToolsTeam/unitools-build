@@ -6,7 +6,7 @@ namespace UniTools.Build.Android
 {
     [CreateAssetMenu(
         fileName = nameof(SetDebugKeystore),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Android) + "/Pre/" + nameof(SetDebugKeystore)
+        menuName = MenuPaths.Android + nameof(SetDebugKeystore)
     )]
     public sealed class SetDebugKeystore : ScriptableCustomBuildStep
     {

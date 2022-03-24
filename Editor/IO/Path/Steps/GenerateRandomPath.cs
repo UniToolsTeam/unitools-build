@@ -1,14 +1,13 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using UniTools.Build;
 using UnityEngine;
 
 namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(GenerateRandomPath),
-        menuName = nameof(UniTools) + "/Build/Steps/Pre/" + nameof(GenerateRandomPath)
+        menuName = MenuPaths.IO + nameof(GenerateRandomPath)
     )]
     public sealed class GenerateRandomPath : ScriptableCustomBuildStep
     {

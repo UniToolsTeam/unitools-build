@@ -10,7 +10,7 @@ namespace UniTools.Build.Standalone
 {
     [CreateAssetMenu(
         fileName = nameof(BuildMacOS),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Standalone) + "/" + nameof(BuildMacOS)
+        menuName = MenuPaths.Standalone + nameof(BuildMacOS)
     )]
     public sealed class BuildMacOS : ScriptableBuildStepWithOptions
     {

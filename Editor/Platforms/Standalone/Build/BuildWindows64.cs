@@ -7,7 +7,7 @@ namespace UniTools.Build.Standalone
 {
     [CreateAssetMenu(
         fileName = nameof(BuildWindows64),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Standalone) + "/" + nameof(BuildWindows64)
+        menuName = MenuPaths.Standalone + nameof(BuildWindows64)
     )]
     public sealed class BuildWindows64 : ScriptableBuildStepWithOptions
     {

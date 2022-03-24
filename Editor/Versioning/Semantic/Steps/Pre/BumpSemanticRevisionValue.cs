@@ -6,14 +6,14 @@ namespace UniTools.Build.Versioning
 {
     [CreateAssetMenu(
         fileName = nameof(BumpSemanticRevisionValue),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Versioning) + "/Pre/" + nameof(BumpSemanticRevisionValue)
+        menuName = MenuPaths.Versioning + nameof(BumpSemanticRevisionValue)
     )]
     public sealed class BumpSemanticRevisionValue : IncrementSemanticVersionStep
     {
         public override async Task Execute()
         {
             Version v = Load();
-            Save(v.Major, v.Minor, v.Build, v.Revision + (int) Increment);
+            Save(v.Major, v.Minor, v.Build, v.Revision + (int)Increment);
             await Task.CompletedTask;
         }
     }
