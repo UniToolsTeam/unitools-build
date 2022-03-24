@@ -4,7 +4,7 @@ using UnityEditor.iOS.Xcode;
 using System.IO;
 using UnityEngine;
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     public abstract class DistributeIosApplicationStep : IosPostBuildStep
     {

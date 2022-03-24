@@ -2,11 +2,11 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace UniTools.Build.Android
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(SetKeystorePassword),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Android) + "/Pre/" + nameof(SetKeystorePassword)
+        menuName = MenuPaths.Android + nameof(SetKeystorePassword)
     )]
     public sealed class SetKeystorePassword : ScriptableCustomBuildStep
     {

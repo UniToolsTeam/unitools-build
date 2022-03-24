@@ -1,14 +1,13 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using UniTools.Build;
 using UnityEngine;
 
 namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(EnsureDirectoryEmpty),
-        menuName = nameof(UniTools) + "/Build/IO/" + nameof(EnsureDirectoryEmpty)
+        menuName = MenuPaths.IO + nameof(EnsureDirectoryEmpty)
     )]
     public sealed class EnsureDirectoryEmpty : ScriptableCustomBuildStep
     {
@@ -34,6 +33,11 @@ namespace UniTools.Build
             }
 
             await Task.CompletedTask;
+        }
+
+        public override string ToString()
+        {
+            return m_path.ToString();
         }
     }
 }

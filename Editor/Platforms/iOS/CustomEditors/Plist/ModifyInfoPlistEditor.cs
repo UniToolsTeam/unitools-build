@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     [CustomEditor(typeof(ModifyInfoPlist))]
     public sealed class ModifyInfoPlistEditor : Editor

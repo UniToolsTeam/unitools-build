@@ -6,11 +6,11 @@ using UnityEditor.OSXStandalone;
 #endif
 using UnityEngine;
 
-namespace UniTools.Build.Standalone
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(BuildMacOS),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Standalone) + "/" + nameof(BuildMacOS)
+        menuName = MenuPaths.Standalone + nameof(BuildMacOS)
     )]
     public sealed class BuildMacOS : ScriptableBuildStepWithOptions
     {

@@ -4,7 +4,7 @@ namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(ScriptablePath),
-        menuName = nameof(UniTools) + "/" + nameof(Build) + "/Path"
+        menuName = MenuPaths.IO + "Path"
     )]
     public sealed class ScriptablePath : BaseScriptablePath
     {

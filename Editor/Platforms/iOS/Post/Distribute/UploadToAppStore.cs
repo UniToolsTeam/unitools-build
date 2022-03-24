@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 using UniTools.Build;
 using UnityEngine;
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(UploadToAppStore),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(iOS) + "/Post/" + nameof(UploadToAppStore)
+        menuName = MenuPaths.IOS + nameof(UploadToAppStore)
     )]
     public sealed class UploadToAppStore : DistributeIosApplicationStep
     {

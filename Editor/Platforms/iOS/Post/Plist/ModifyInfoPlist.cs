@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 using UniTools.Build;
 using UnityEngine;
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(ModifyInfoPlist),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(iOS) + "/Post/" + nameof(ModifyInfoPlist)
+        menuName = MenuPaths.IOS + nameof(ModifyInfoPlist)
     )]
     public sealed class ModifyInfoPlist : ScriptableCustomBuildStep
     {

@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using UnityEditor.iOS.Xcode;
 #endif
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     public sealed class ProvisioningProfile
     {

@@ -1,7 +1,7 @@
 using System;
 using UnityEditor;
 
-namespace UniTools.Build.Versioning
+namespace UniTools.Build
 {
     public abstract class ChangeSemanticVersionStep : ScriptableCustomBuildStep
     {

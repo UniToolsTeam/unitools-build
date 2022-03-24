@@ -3,11 +3,11 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-namespace UniTools.Build.Standalone
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(BuildWindows),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Standalone) + "/" + nameof(BuildWindows)
+        menuName = MenuPaths.Standalone + nameof(BuildWindows)
     )]
     public sealed class BuildWindows : ScriptableBuildStepWithOptions
     {

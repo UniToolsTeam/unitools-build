@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     public abstract class IosPostBuildStep : ScriptableCustomBuildStep
     {

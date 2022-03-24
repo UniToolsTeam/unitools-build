@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 using UniTools.Build;
 using UnityEngine;
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(ExportIpa),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(iOS) + "/Post/" + nameof(ExportIpa)
+        menuName = MenuPaths.IOS + nameof(ExportIpa)
     )]
     public sealed class ExportIpa : DistributeIosApplicationStep
     {

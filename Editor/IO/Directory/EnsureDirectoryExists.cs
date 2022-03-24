@@ -1,13 +1,12 @@
 using System.IO;
 using System.Threading.Tasks;
-using UniTools.Build;
 using UnityEngine;
 
 namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(EnsureDirectoryExists),
-        menuName = nameof(UniTools) + "/Build/IO/" + nameof(EnsureDirectoryExists)
+        menuName = MenuPaths.IO + nameof(EnsureDirectoryExists)
     )]
     public sealed class EnsureDirectoryExists : ScriptableCustomBuildStep
     {
@@ -18,6 +17,11 @@ namespace UniTools.Build
             Directory.CreateDirectory(m_path.ToString());
 
             await Task.CompletedTask;
+        }
+
+        public override string ToString()
+        {
+            return m_path.ToString();
         }
     }
 }

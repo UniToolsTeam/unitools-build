@@ -2,11 +2,11 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace UniTools.Build.Android
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(SetDebugKeystore),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Android) + "/Pre/" + nameof(SetDebugKeystore)
+        menuName = MenuPaths.Android + nameof(SetDebugKeystore)
     )]
     public sealed class SetDebugKeystore : ScriptableCustomBuildStep
     {

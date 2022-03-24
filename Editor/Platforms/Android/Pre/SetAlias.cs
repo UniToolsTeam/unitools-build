@@ -3,11 +3,11 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
 
-namespace UniTools.Build.Android
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(SetAlias),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(Android) + "/Pre/" + nameof(SetAlias)
+        menuName = MenuPaths.Android + nameof(SetAlias)
     )]
     public sealed class SetAlias : ScriptableCustomBuildStep
     {

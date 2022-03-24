@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor.iOS.Xcode;
 #endif
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     [Serializable]
     public abstract class SerializablePlistElement<TValue>

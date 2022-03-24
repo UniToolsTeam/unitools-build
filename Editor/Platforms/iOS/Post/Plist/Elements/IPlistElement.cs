@@ -1,7 +1,7 @@
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 #endif
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     public interface IPlistElement
     {

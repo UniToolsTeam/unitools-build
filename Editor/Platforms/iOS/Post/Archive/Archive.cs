@@ -2,14 +2,14 @@ using System.Threading.Tasks;
 using UniTools.Build;
 using UnityEngine;
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     /// <summary>
     /// Creates iOS archive from the xCode project using CLI tools
     /// </summary>
     [CreateAssetMenu(
         fileName = nameof(Archive),
-        menuName = nameof(UniTools) + "/Build/Steps/" + nameof(iOS) + "/Post/" + nameof(Archive)
+        menuName = MenuPaths.IOS + nameof(Archive)
     )]
     public sealed class Archive : IosPostBuildStep
     {

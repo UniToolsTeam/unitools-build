@@ -8,7 +8,7 @@ namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(CopyFileToDirectory),
-        menuName = nameof(UniTools) + "/Build/IO/" + nameof(CopyFileToDirectory)
+        menuName = MenuPaths.IO + nameof(CopyFileToDirectory)
     )]
     public sealed class CopyFileToDirectory : ScriptableCustomBuildStep
     {

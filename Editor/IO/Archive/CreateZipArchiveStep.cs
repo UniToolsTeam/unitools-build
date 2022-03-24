@@ -1,14 +1,13 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using UniTools.Build;
 using UnityEngine;
 
 namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(CreateZipArchiveStep),
-        menuName = nameof(UniTools) + "/" + nameof(Build) + "/" + nameof(CreateZipArchiveStep)
+        menuName = MenuPaths.IO + "Zip Archive"
     )]
     public sealed class CreateZipArchiveStep : ScriptableCustomBuildStep
     {

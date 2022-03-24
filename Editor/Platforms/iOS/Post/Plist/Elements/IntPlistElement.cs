@@ -3,7 +3,7 @@ using System;
 #if UNITY_IOS
 using UnityEditor.iOS.Xcode;
 #endif
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     [Serializable]
     public sealed class IntPlistElement : SerializablePlistElement<int>
