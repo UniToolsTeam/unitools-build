@@ -1,5 +1,4 @@
 using System.Linq;
-using UniTools.Build;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,6 +8,7 @@ namespace UniTools.Build
     {
         [SerializeField] private PathProperty m_path = default;
         [SerializeField] private bool m_developmentBuild = false;
+        [SerializeField] private bool m_cleanBuildCache = false;
 
         protected BuildPlayerOptions Options
         {
@@ -23,6 +23,11 @@ namespace UniTools.Build
                 if (m_developmentBuild)
                 {
                     buildPlayerOptions.options = BuildOptions.Development;
+                }
+
+                if (m_cleanBuildCache)
+                {
+                    buildPlayerOptions.options |= BuildOptions.CleanBuildCache;
                 }
 
                 return buildPlayerOptions;
