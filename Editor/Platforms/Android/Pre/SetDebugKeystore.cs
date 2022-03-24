@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace UniTools.Build.Android
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(SetDebugKeystore),

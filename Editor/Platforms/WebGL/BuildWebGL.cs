@@ -5,7 +5,7 @@ using UnityEditor.Build.Reporting;
 using UnityEditor.WebGL;
 using UnityEngine;
 
-namespace UniTools.Build.WebGL
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(BuildWebGL),

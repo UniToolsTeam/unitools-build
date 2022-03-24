@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace UniTools.Build.Versioning
+namespace UniTools.Build
 {
     public abstract class IncrementSemanticVersionStep : ChangeSemanticVersionStep
     {

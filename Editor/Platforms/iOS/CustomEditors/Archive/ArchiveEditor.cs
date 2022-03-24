@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     [CustomEditor(typeof(Archive))]
     public sealed class ArchiveEditor : IosPostBuildStepEditor

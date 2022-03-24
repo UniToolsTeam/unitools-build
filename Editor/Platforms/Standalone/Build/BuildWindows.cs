@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-namespace UniTools.Build.Standalone
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(BuildWindows),

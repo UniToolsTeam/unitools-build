@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(BuildXCode),

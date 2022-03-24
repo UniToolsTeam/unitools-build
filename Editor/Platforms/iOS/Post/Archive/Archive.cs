@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using UniTools.Build;
 using UnityEngine;
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     /// <summary>
     /// Creates iOS archive from the xCode project using CLI tools

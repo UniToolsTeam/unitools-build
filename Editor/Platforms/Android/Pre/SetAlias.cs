@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
 
-namespace UniTools.Build.Android
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(SetAlias),

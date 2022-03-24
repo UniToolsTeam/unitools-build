@@ -6,7 +6,7 @@ using UnityEditor.OSXStandalone;
 #endif
 using UnityEngine;
 
-namespace UniTools.Build.Standalone
+namespace UniTools.Build
 {
     [CreateAssetMenu(
         fileName = nameof(BuildMacOS),

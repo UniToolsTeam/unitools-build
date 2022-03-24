@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace UniTools.Build.iOS
+namespace UniTools.Build
 {
     public abstract class DistributeIosApplicationStepEditor : IosPostBuildStepEditor
     {

@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace UniTools.Build.Android
+namespace UniTools.Build
 {
     [CustomEditor(typeof(SetKeystorePassword))]
     public sealed class SetKeystorePasswordEditor : Editor
