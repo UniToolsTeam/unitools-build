@@ -2,8 +2,10 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using UnityEditor.WebGL;
 using UnityEngine;
+#if UNITY_WEBGL
+using UnityEditor.WebGL;
+#endif
 
 namespace UniTools.Build
 {
@@ -13,7 +15,9 @@ namespace UniTools.Build
     )]
     public sealed class BuildWebGL : ScriptableBuildStepWithOptions
     {
+#if UNITY_WEBGL
         [SerializeField] private CodeOptimization m_codeOptimization = CodeOptimization.Size;
+#endif
         [SerializeField] private Il2CppCodeGeneration m_IL2CPPCodeGeneration = Il2CppCodeGeneration.OptimizeSize;
         [SerializeField] private WebGLExceptionSupport m_exceptionSupport = WebGLExceptionSupport.None;
         [SerializeField] private WebGLCompressionFormat m_compressionFormat = default;
@@ -35,8 +39,11 @@ namespace UniTools.Build
             PlayerSettings.WebGL.dataCaching = m_dataCaching;
             PlayerSettings.WebGL.debugSymbolMode = m_debugSymbolMode;
             PlayerSettings.WebGL.decompressionFallback = m_decompressionFallback;
-
-            EditorUserBuildSettings.SetPlatformSettings(UnityEditor.BuildPipeline.GetBuildTargetName(BuildTarget.WebGL), "CodeOptimization", m_codeOptimization.ToString()); // or "size"
+#if UNITY_WEBGL
+            EditorUserBuildSettings.SetPlatformSettings(UnityEditor.BuildPipeline.GetBuildTargetName(BuildTarget.WebGL), "CodeOptimization", m_codeOptimization.ToString());
+#else
+            EditorUserBuildSettings.SetPlatformSettings(UnityEditor.BuildPipeline.GetBuildTargetName(BuildTarget.WebGL), "CodeOptimization", "Size");
+#endif
             EditorUserBuildSettings.il2CppCodeGeneration = m_IL2CPPCodeGeneration;
 
             AssetDatabase.Refresh();

@@ -16,9 +16,8 @@ namespace UniTools.Build
     {
 #if UNITY_EDITOR_OSX
         [SerializeField] private MacOSArchitecture m_architecture = default;
-#endif
         [SerializeField] private bool m_createXcodeProject = false;
-
+#endif
         public override BuildTarget Target => BuildTarget.StandaloneOSX;
 
         public override async Task<BuildReport> Execute()
