@@ -56,6 +56,4 @@ namespace UniTools.Build
             return report;
         }
     }
-
-#endif
-        }
+}
