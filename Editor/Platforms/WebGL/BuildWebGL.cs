@@ -1,3 +1,5 @@
+#if UNITY_WEBGL
+
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Build;
@@ -5,8 +7,12 @@ using UnityEditor.Build.Reporting;
 using UnityEditor.WebGL;
 using UnityEngine;
 
+#endif
+
 namespace UniTools.Build
 {
+#if UNITY_WEBGL
+
     [CreateAssetMenu(
         fileName = nameof(BuildWebGL),
         menuName = MenuPaths.WebGL + nameof(BuildWebGL)
@@ -49,4 +55,6 @@ namespace UniTools.Build
             return report;
         }
     }
+
+#endif
 }
