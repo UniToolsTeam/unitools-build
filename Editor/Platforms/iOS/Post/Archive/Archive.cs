@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using UniTools.Build;
 using UnityEngine;
 
 namespace UniTools.Build
@@ -11,12 +10,13 @@ namespace UniTools.Build
         fileName = nameof(Archive),
         menuName = MenuPaths.IOS + nameof(Archive)
     )]
-    public sealed class Archive : IosPostBuildStep
+    public class Archive : IosPostBuildStep
     {
         [SerializeField] private PathProperty m_projectPath = new PathProperty("Unity-iPhone.xcodeproj");
         [SerializeField] private PathProperty m_outputPath = new PathProperty("Unity-iPhone.xcarchive");
         [SerializeField] private string m_scheme = "Unity-iPhone";
         [SerializeField] private bool m_useModernBuildSystem = true;
+        protected virtual string CommandStart { get; set; }
 
         public override async Task Execute()
         {
@@ -24,7 +24,7 @@ namespace UniTools.Build
 
             XCodeBuild build = Cli.Tool<XCodeBuild>();
             string command =
-                $"-project {m_projectPath}" +
+                $"-{CommandStart} {m_projectPath}" +
                 $" -scheme \"{m_scheme}\"" +
                 " archive" +
                 $" -archivePath {m_outputPath}" +
