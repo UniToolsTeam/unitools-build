@@ -10,13 +10,13 @@ namespace UniTools.Build
         fileName = nameof(Archive),
         menuName = MenuPaths.IOS + nameof(Archive)
     )]
-    public class Archive : IosPostBuildStep
+    public abstract class Archive : IosPostBuildStep
     {
         [SerializeField] private PathProperty m_projectPath = new PathProperty("Unity-iPhone.xcodeproj");
         [SerializeField] private PathProperty m_outputPath = new PathProperty("Unity-iPhone.xcarchive");
         [SerializeField] private string m_scheme = "Unity-iPhone";
         [SerializeField] private bool m_useModernBuildSystem = true;
-        protected virtual string CommandStart { get; set; }
+        protected abstract string CommandStart { get; }
 
         public override async Task Execute()
         {
