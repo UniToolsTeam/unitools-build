@@ -3,13 +3,6 @@ using UnityEngine;
 
 namespace UniTools.Build
 {
-    /// <summary>
-    /// Creates iOS archive from the xCode project using CLI tools
-    /// </summary>
-    [CreateAssetMenu(
-        fileName = nameof(Archive),
-        menuName = MenuPaths.IOS + nameof(Archive)
-    )]
     public abstract class Archive : IosPostBuildStep
     {
         [SerializeField] private PathProperty m_projectPath = new PathProperty("Unity-iPhone.xcodeproj");
