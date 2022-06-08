@@ -1,7 +1,7 @@
 {
   "displayName": "UniTools.Build",
   "name": "com.unitools.build",
-  "version": "0.0.9-preview",
+  "version": "0.0.10-preview",
   "unity": "2019.1",
   "description": "Customizable Build Pipeline for Unity3D",
   "keywords": [
