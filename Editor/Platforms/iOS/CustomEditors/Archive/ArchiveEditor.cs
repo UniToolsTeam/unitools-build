@@ -2,7 +2,7 @@ using UnityEditor;
 
 namespace UniTools.Build
 {
-    [CustomEditor(typeof(Archive))]
+    [CustomEditor(typeof(Archive), true)]
     public sealed class ArchiveEditor : IosPostBuildStepEditor
     {
         private SerializedProperty m_projectPath = default;

@@ -20,19 +20,37 @@ namespace UniTools.Build
         public static ProvisioningProfile Load(string pathToFile)
         {
 #if UNITY_IOS
-            const string patternPlist = "<plist(.*)<\\/plist>";
+           const string patternPlist = "<plist(.*)<\\/plist>";
 
             ProvisioningProfile profile = new ProvisioningProfile();
             string input = File.ReadAllText(pathToFile);
+
             Match match = Regex.Match(input, patternPlist, RegexOptions.Singleline);
 
-            PlistDocument plistDocument = new PlistDocument();
-            plistDocument.ReadFromString(match.ToString());
+            string xml = match.ToString();
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(xml);
 
-            //TODO Unsafe parsing! Try - catch or handle exceptions
-            profile.Uuid = plistDocument.root["UUID"].AsString();
-            profile.Name = plistDocument.root["Name"].AsString();
-            profile.TeamIdentifier = plistDocument.root["TeamIdentifier"].AsArray().values[0].AsString();
+            foreach (XmlNode parentNode in xmlDoc.DocumentElement)
+            {
+                for (int i = 0; i < parentNode.ChildNodes.Count; i++)
+                {
+                    if (parentNode.ChildNodes[i].InnerText == "UUID")
+                    {
+                        profile.Uuid = parentNode.ChildNodes[i + 1].InnerText;
+                    }
+
+                    if (parentNode.ChildNodes[i].InnerText == "Name")
+                    {
+                        profile.Name = parentNode.ChildNodes[i + 1].InnerText;
+                    }
+
+                    if (parentNode.ChildNodes[i].InnerText == "TeamIdentifier")
+                    {
+                        profile.TeamIdentifier = parentNode.ChildNodes[i + 1].InnerText;
+                    }
+                }
+            }
 
             return profile;
 #else

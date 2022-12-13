@@ -9,6 +9,7 @@ namespace UniTools.Build
         [SerializeField] private PathProperty m_outputPath = new PathProperty("Unity-iPhone.xcarchive");
         [SerializeField] private string m_scheme = "Unity-iPhone";
         [SerializeField] private bool m_useModernBuildSystem = true;
+        [SerializeField] private bool m_enableBitcode = true;
         protected abstract string CommandStart { get; }
 
         public override async Task Execute()
@@ -23,7 +24,15 @@ namespace UniTools.Build
                 $" -archivePath {m_outputPath}" +
                 $" DEVELOPMENT_TEAM={TeamId}" +
                 $" PROVISIONING_PROFILE={ProvisioningProfileUuid}";
-
+            
+            if (m_enableBitcode)
+            {
+                command += " -configuration Release ENABLE_BITCODE=YES";
+            }
+            else
+            {
+                command += " -configuration Release ENABLE_BITCODE=NO";
+            }
             if (m_useModernBuildSystem)
             {
                 command += " -UseModernBuildSystem=YES";
