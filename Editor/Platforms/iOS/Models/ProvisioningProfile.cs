@@ -1,4 +1,5 @@
 #if UNITY_IOS
+using System.Xml;
 using System.IO;
 using System.Text.RegularExpressions;
 using UnityEditor.iOS.Xcode;
