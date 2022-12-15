@@ -2,6 +2,9 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 #if UNITY_EDITOR_OSX
+#if UNITY_2022_2_OR_NEWER
+using UnityEditor.Build;
+#endif
 using UnityEditor.OSXStandalone;
 #endif
 using UnityEngine;
@@ -15,7 +18,12 @@ namespace UniTools.Build
     public sealed class BuildMacOS : ScriptableBuildStepWithOptions
     {
 #if UNITY_EDITOR_OSX
+        
+#if UNITY_2022_2_OR_NEWER
+        [SerializeField] private OSArchitecture m_architecture = default;
+#else 
         [SerializeField] private MacOSArchitecture m_architecture = default;
+#endif
         [SerializeField] private bool m_createXcodeProject = false;
 #endif
         public override BuildTarget Target => BuildTarget.StandaloneOSX;
