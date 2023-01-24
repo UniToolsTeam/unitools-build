@@ -8,7 +8,7 @@ namespace UniTools.Build
 {
     public abstract class ScriptablePostBuildPipeline : ScriptablePreBuildPipeline
     {
-        [SerializeField] private ScriptablePlatformBuildStep m_build = default;
+        [SerializeField] private ScriptableBuildStep m_build = default;
 
         [Serializable]
         private sealed class PostBuildStep

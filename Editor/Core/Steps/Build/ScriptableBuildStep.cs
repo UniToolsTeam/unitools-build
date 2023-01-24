@@ -9,7 +9,7 @@ namespace UniTools.Build
     /// <summary>
     /// This step must be user to create a build (artifacts: iOS, Android, etc...) using Unity API
     /// </summary>
-    public abstract class ScriptablePlatformBuildStep : ScriptableObject
+    public abstract class ScriptableBuildStep : ScriptableObject
     {
         public abstract BuildTarget Target { get; }
 

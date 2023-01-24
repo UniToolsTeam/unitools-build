@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UniTools.Build
 {
-    public abstract class ScriptableBuildStepWithOptions : ScriptablePlatformBuildStep
+    public abstract class ScriptableBuildStepWithOptions : ScriptableBuildStep
     {
         [SerializeField] private PathProperty m_path = default;
         [SerializeField] private bool m_developmentBuild = false;
