@@ -44,7 +44,7 @@ namespace UniTools.Build
             ToolResult result = build.Execute(command, ProjectPath.Value);
             if (result.ExitCode != 0)
             {
-                throw new PostBuildStepFailedException($"{nameof(Archive)}: Failed! {result.ToString()}");
+                throw new BuildStepFailedException($"{nameof(Archive)}: Failed! {result.ToString()}");
             }
 #else
             throw new Exception($"{nameof(UploadToAppStore)}: unsupported platform for {m_archivePath}, {m_outputPath}, {m_pathToXCodeProject}");
