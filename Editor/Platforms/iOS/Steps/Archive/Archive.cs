@@ -3,17 +3,16 @@ using UnityEngine;
 
 namespace UniTools.Build
 {
-    public abstract class Archive : IosBuildStep
+    public abstract class Archive : ScriptableCustomBuildStep
     {
         [SerializeField] private PathProperty m_projectPath = new PathProperty("Unity-iPhone.xcodeproj");
         [SerializeField] private PathProperty m_outputPath = new PathProperty("Unity-iPhone.xcarchive");
         [SerializeField] private string m_scheme = "Unity-iPhone";
+        [SerializeField] private string m_teamId = string.Empty;
         [SerializeField] private bool m_useModernBuildSystem = true;
         [SerializeField] private bool m_enableBitcode = true;
-
-        [SerializeField] private bool m_overrideTeamId = false;
         [SerializeField] private bool m_overrideProvisioningProfile = false;
-
+        [SerializeField] private string m_provisioningProfileUuid = string.Empty;
         protected abstract string CommandStart { get; }
 
         public override async Task Execute()
@@ -27,14 +26,11 @@ namespace UniTools.Build
                 $" -scheme \"{m_scheme}\"" +
                 $" -archivePath {m_outputPath}";
 
-            if (m_overrideTeamId)
-            {
-                command += $" DEVELOPMENT_TEAM={TeamId}";
-            }
+            command += $" DEVELOPMENT_TEAM={m_teamId}";
 
             if (m_overrideProvisioningProfile)
             {
-                command += $" PROVISIONING_PROFILE={ProvisioningProfileUuid}";
+                command += $" PROVISIONING_PROFILE={m_provisioningProfileUuid}";
             }
 
             if (m_enableBitcode)
