@@ -1,12 +1,12 @@
+using System.Threading.Tasks;
+using UnityEngine;
 #if UNITY_IOS
 using System.IO;
 using UnityEditor.iOS.Xcode;
+
 #else
 using System;
 #endif
-using System.Threading.Tasks;
-using UniTools.Build;
-using UnityEngine;
 
 namespace UniTools.Build
 {
@@ -16,9 +16,6 @@ namespace UniTools.Build
     )]
     public sealed class ExportIpa : DistributeIosApplicationStep
     {
-        [SerializeField] private PathProperty m_pathToXCodeProject = default;
-        [SerializeField] private PathProperty m_archivePath = new PathProperty("Unity-iPhone.xcarchive");
-        [SerializeField] private PathProperty m_outputPath = default;
         [SerializeField, Tooltip("The method must correspond to the provision profile")] private ExportMethods m_method = ExportMethods.AdHoc;
 
         public override async Task Execute()
@@ -26,7 +23,6 @@ namespace UniTools.Build
             await Task.CompletedTask;
 #if UNITY_IOS
             PlistDocument exportOptions = CreateExportOptions();
-            string exportOptionsPath = ExportOptionsPath(m_pathToXCodeProject.ToString());
 
             if (m_method == ExportMethods.AdHoc)
             {
@@ -41,15 +37,15 @@ namespace UniTools.Build
                 throw new BuildStepFailedException($"{nameof(Archive)}: Failed due to unsupported method {m_method}");
             }
 
-            File.WriteAllText(exportOptionsPath, exportOptions.WriteToString());
+            await File.WriteAllTextAsync(ExportOptionsPath, exportOptions.WriteToString());
 
             XCodeBuild build = Cli.Tool<XCodeBuild>();
 
             string command =
                 $"-exportArchive " +
-                $" -archivePath {m_archivePath}" +
-                $" -exportOptionsPlist {exportOptionsPath}" +
-                $" -exportPath {m_outputPath}";
+                $" -archivePath {ArchivePath}" +
+                $" -exportOptionsPlist {ExportOptionsPath}" +
+                $" -exportPath {OutputPath}";
 
             ToolResult result = build.Execute(command, ProjectPath.Value);
             if (result.ExitCode != 0)
@@ -57,7 +53,7 @@ namespace UniTools.Build
                 throw new BuildStepFailedException($"{nameof(Archive)}: Failed! {result.ToString()}");
             }
 #else
-            throw new Exception($"{nameof(ExportIpa)}: unsupported platform for {m_archivePath}, {m_outputPath}, {m_method}, {m_pathToXCodeProject}");
+            throw new Exception($"{nameof(ExportIpa)}: unsupported platform!");
 #endif
         }
     }

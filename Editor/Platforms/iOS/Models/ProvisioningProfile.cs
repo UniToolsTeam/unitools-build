@@ -2,13 +2,19 @@
 using System.Xml;
 using System.IO;
 using System.Text.RegularExpressions;
-using UnityEditor.iOS.Xcode;
 #endif
 
 namespace UniTools.Build
 {
     public sealed class ProvisioningProfile
     {
+        public static readonly ProvisioningProfile Empty = new ProvisioningProfile
+        {
+            Uuid = string.Empty,
+            Name = string.Empty,
+            TeamIdentifier = string.Empty
+        };
+
         public string Uuid { get; private set; }
 
         public string Name { get; private set; }
@@ -20,8 +26,13 @@ namespace UniTools.Build
 
         public static ProvisioningProfile Load(string pathToFile)
         {
+            if (string.IsNullOrWhiteSpace(pathToFile))
+            {
+                return Empty;
+            }
+
 #if UNITY_IOS
-           const string patternPlist = "<plist(.*)<\\/plist>";
+            const string patternPlist = "<plist(.*)<\\/plist>";
 
             ProvisioningProfile profile = new ProvisioningProfile();
             string input = File.ReadAllText(pathToFile);
