@@ -26,7 +26,7 @@ namespace UniTools.Build
             exportOptions.root.SetString("method", "app-store");
             exportOptions.root.SetString("destination", "upload");
 
-            await File.WriteAllTextAsync(ExportOptionsPath, exportOptions.WriteToString());
+            File.WriteAllText(ExportOptionsPath, exportOptions.WriteToString());
 
             XCodeBuild build = Cli.Tool<XCodeBuild>();
 

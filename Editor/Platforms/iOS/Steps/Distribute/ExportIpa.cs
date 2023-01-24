@@ -37,7 +37,7 @@ namespace UniTools.Build
                 throw new BuildStepFailedException($"{nameof(Archive)}: Failed due to unsupported method {m_method}");
             }
 
-            await File.WriteAllTextAsync(ExportOptionsPath, exportOptions.WriteToString());
+            File.WriteAllText(ExportOptionsPath, exportOptions.WriteToString());
 
             XCodeBuild build = Cli.Tool<XCodeBuild>();
 
