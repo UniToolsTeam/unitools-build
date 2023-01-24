@@ -10,6 +10,10 @@ namespace UniTools.Build
         [SerializeField] private string m_scheme = "Unity-iPhone";
         [SerializeField] private bool m_useModernBuildSystem = true;
         [SerializeField] private bool m_enableBitcode = true;
+
+        [SerializeField] private bool m_overrideTeamId = false;
+        [SerializeField] private bool m_overrideProvisioningProfile = false;
+
         protected abstract string CommandStart { get; }
 
         public override async Task Execute()
@@ -18,21 +22,30 @@ namespace UniTools.Build
 
             XCodeBuild build = Cli.Tool<XCodeBuild>();
             string command =
-                $"-{CommandStart} {m_projectPath}" +
-                $" -scheme \"{m_scheme}\"" +
                 " archive" +
-                $" -archivePath {m_outputPath}" +
-                $" DEVELOPMENT_TEAM={TeamId}" +
-                $" PROVISIONING_PROFILE={ProvisioningProfileUuid}";
-            
+                $" -{CommandStart} {m_projectPath}" +
+                $" -scheme \"{m_scheme}\"" +
+                $" -archivePath {m_outputPath}";
+
+            if (m_overrideTeamId)
+            {
+                command += $" DEVELOPMENT_TEAM={TeamId}";
+            }
+
+            if (m_overrideProvisioningProfile)
+            {
+                command += $" PROVISIONING_PROFILE={ProvisioningProfileUuid}";
+            }
+
             if (m_enableBitcode)
             {
-                command += " -configuration Release ENABLE_BITCODE=YES";
+                command += " ENABLE_BITCODE=YES";
             }
             else
             {
-                command += " -configuration Release ENABLE_BITCODE=NO";
+                command += " ENABLE_BITCODE=NO";
             }
+
             if (m_useModernBuildSystem)
             {
                 command += " -UseModernBuildSystem=YES";

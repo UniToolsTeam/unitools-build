@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace UniTools.Build
@@ -10,7 +9,7 @@ namespace UniTools.Build
         fileName = nameof(ArchiveWorkspace),
         menuName = MenuPaths.IOS + nameof(ArchiveWorkspace)
     )]
-    public sealed class ArchiveWorkspace: Archive
+    public sealed class ArchiveWorkspace : Archive
     {
         protected override string CommandStart => "workspace";
     }
