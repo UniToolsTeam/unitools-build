@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UniTools.Build
 {
-    public abstract class DistributeIosApplicationStepEditor : IosPostBuildStepEditor
+    public abstract class DistributeIosApplicationStepEditor : IosBuildStepEditor
     {
         private SerializedProperty m_bundleIdentifier = default;
         private SerializedProperty m_teamId = default;
