@@ -10,7 +10,7 @@ namespace UniTools.Build
         [SerializeField] private string m_scheme = "Unity-iPhone";
         [SerializeField] private string m_teamId = string.Empty;
         [SerializeField] private bool m_useModernBuildSystem = true;
-        [SerializeField] private bool m_enableBitcode = true;
+        [SerializeField] private bool m_enableBitcode = false;
         [SerializeField] private bool m_overrideProvisioningProfile = false;
         [SerializeField] private string m_provisioningProfileUuid = string.Empty;
         protected abstract string CommandStart { get; }
