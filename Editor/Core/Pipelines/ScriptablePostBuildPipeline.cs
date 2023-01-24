@@ -21,7 +21,7 @@ namespace UniTools.Build
 
         public async Task<BuildReport> Build() => await m_build.Execute();
 
-        public async Task PostBuild(string pathToBuiltProject)
+        public async Task PostBuild()
         {
             if (m_postBuild == null || m_postBuild.Length == 0)
             {
