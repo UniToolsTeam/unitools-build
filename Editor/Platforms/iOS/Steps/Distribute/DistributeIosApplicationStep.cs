@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace UniTools.Build
 {
-    public abstract class DistributeIosApplicationStep : IosPostBuildStep
+    public abstract class DistributeIosApplicationStep : IosBuildStep
     {
         [SerializeField] private string m_bundleIdentifier = default;
         [SerializeField] private bool m_uploadBitcode = false;
