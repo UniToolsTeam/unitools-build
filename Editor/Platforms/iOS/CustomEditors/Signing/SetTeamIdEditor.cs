@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UniTools.Build
 {
-    [CustomEditor(typeof(SetTeamId), true)]
+    [CustomEditor(typeof(SetTeamId))]
     public sealed class SetTeamIdEditor : Editor
     {
         private SerializedProperty m_teamId = default;
@@ -21,7 +21,7 @@ namespace UniTools.Build
             {
                 EditorGUILayout.BeginVertical();
                 {
-                    EditorGUILayout.HelpBox("You can parse Team Id from the Provisioning Profile", MessageType.Info);
+                    EditorGUILayout.HelpBox("You can parse Team Id from the Provisioning Profile file", MessageType.Info);
                     load = GUILayout.Button("Try");
                 }
                 EditorGUILayout.EndVertical();
