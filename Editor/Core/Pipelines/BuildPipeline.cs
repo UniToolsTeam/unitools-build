@@ -16,7 +16,6 @@ namespace UniTools.Build
         {
             if (Application.isBatchMode)
             {
-                //TODO Implement BatchMode exception
                 throw new Exception($"{nameof(BuildPipeline)}: can not be run from the BatchMode!");
             }
 
@@ -27,11 +26,10 @@ namespace UniTools.Build
                 BuildSummary summary = report.summary;
                 if (summary.result == BuildResult.Failed)
                 {
-                    //TODO Create a separate build exception
                     throw new Exception($"{nameof(BuildPipeline)}: {name} Build failed!");
                 }
 
-                await PostBuild(summary.outputPath);
+                await PostBuild();
             }
             catch (Exception e)
             {

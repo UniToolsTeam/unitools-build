@@ -105,7 +105,7 @@ namespace UniTools.Build
                 throw new Exception($"Failed to find a pipeline with name {name}!");
             }
 
-            await pipeline.PostBuild(summary.outputPath);
+            await pipeline.PostBuild();
         }
     }
 }

@@ -9,9 +9,9 @@ namespace UniTools.Build
         fileName = nameof(ScriptableBuildStepWithDefines),
         menuName = MenuPaths.Defines + "BuildWithDefines"
     )]
-    public sealed class ScriptableBuildStepWithDefines : ScriptablePlatformBuildStep
+    public sealed class ScriptableBuildStepWithDefines : ScriptableBuildStep
     {
-        [SerializeField] private ScriptablePlatformBuildStep m_successor = default;
+        [SerializeField] private ScriptableBuildStep m_successor = default;
         [SerializeField] private ScriptingDefineSymbols m_symbols = default;
 
         public override BuildTarget Target => m_successor.Target;

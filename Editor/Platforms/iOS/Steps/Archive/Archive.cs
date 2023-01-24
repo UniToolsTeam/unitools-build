@@ -3,13 +3,16 @@ using UnityEngine;
 
 namespace UniTools.Build
 {
-    public abstract class Archive : IosPostBuildStep
+    public abstract class Archive : ScriptableCustomBuildStep
     {
         [SerializeField] private PathProperty m_projectPath = new PathProperty("Unity-iPhone.xcodeproj");
         [SerializeField] private PathProperty m_outputPath = new PathProperty("Unity-iPhone.xcarchive");
         [SerializeField] private string m_scheme = "Unity-iPhone";
+        [SerializeField] private string m_teamId = string.Empty;
         [SerializeField] private bool m_useModernBuildSystem = true;
-        [SerializeField] private bool m_enableBitcode = true;
+        [SerializeField] private bool m_enableBitcode = false;
+        [SerializeField] private bool m_overrideProvisioningProfile = false;
+        [SerializeField] private string m_provisioningProfileUuid = string.Empty;
         protected abstract string CommandStart { get; }
 
         public override async Task Execute()
@@ -18,21 +21,27 @@ namespace UniTools.Build
 
             XCodeBuild build = Cli.Tool<XCodeBuild>();
             string command =
-                $"-{CommandStart} {m_projectPath}" +
-                $" -scheme \"{m_scheme}\"" +
                 " archive" +
-                $" -archivePath {m_outputPath}" +
-                $" DEVELOPMENT_TEAM={TeamId}" +
-                $" PROVISIONING_PROFILE={ProvisioningProfileUuid}";
-            
+                $" -{CommandStart} {m_projectPath}" +
+                $" -scheme \"{m_scheme}\"" +
+                $" -archivePath {m_outputPath}";
+
+            command += $" DEVELOPMENT_TEAM={m_teamId}";
+
+            if (m_overrideProvisioningProfile)
+            {
+                command += $" PROVISIONING_PROFILE={m_provisioningProfileUuid}";
+            }
+
             if (m_enableBitcode)
             {
-                command += " -configuration Release ENABLE_BITCODE=YES";
+                command += " ENABLE_BITCODE=YES";
             }
             else
             {
-                command += " -configuration Release ENABLE_BITCODE=NO";
+                command += " ENABLE_BITCODE=NO";
             }
+
             if (m_useModernBuildSystem)
             {
                 command += " -UseModernBuildSystem=YES";
@@ -45,7 +54,7 @@ namespace UniTools.Build
             ToolResult result = build.Execute(command, ProjectPath.Value);
             if (result.ExitCode != 0)
             {
-                throw new PostBuildStepFailedException($"{nameof(Archive)}: Failed! {result.ToString()}");
+                throw new BuildStepFailedException($"{nameof(Archive)}: Failed! {result.ToString()}");
             }
         }
     }
