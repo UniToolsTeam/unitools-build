@@ -11,7 +11,7 @@ namespace UniTools.Build
         fileName = nameof(SetTeamId),
         menuName = MenuPaths.IOS + nameof(SetTeamId)
     )]
-    public sealed class SetTeamId : ScriptableCustomBuildStep
+    public sealed class SetTeamId : BuildStep
     {
         [SerializeField] private string m_teamId = default;
 

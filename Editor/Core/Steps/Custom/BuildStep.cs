@@ -8,7 +8,7 @@ namespace UniTools.Build
     /// <summary>
     /// This type of steps should be user to create any custom behavior for the build pipeline
     /// </summary>
-    public abstract class ScriptableCustomBuildStep : ScriptableObject
+    public abstract class BuildStep : ScriptableObject
     {
         public abstract Task Execute();
 

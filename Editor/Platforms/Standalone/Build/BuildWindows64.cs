@@ -10,7 +10,7 @@ namespace UniTools.Build
         fileName = nameof(BuildWindows64),
         menuName = MenuPaths.Standalone + nameof(BuildWindows64)
     )]
-    public sealed class BuildWindows64 : ScriptableBuildStepWithOptions
+    public sealed class BuildWindows64 : UnityBuildStepWithOptions
     {
         public override BuildTarget Target => BuildTarget.StandaloneWindows64;
 

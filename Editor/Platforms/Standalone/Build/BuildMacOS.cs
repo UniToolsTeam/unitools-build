@@ -16,7 +16,7 @@ namespace UniTools.Build
         fileName = nameof(BuildMacOS),
         menuName = MenuPaths.Standalone + nameof(BuildMacOS)
     )]
-    public sealed class BuildMacOS : ScriptableBuildStepWithOptions
+    public sealed class BuildMacOS : UnityBuildStepWithOptions
     {
 #if UNITY_EDITOR_OSX
 

@@ -10,7 +10,7 @@ namespace UniTools.Build
         fileName = nameof(BuildXCode),
         menuName = MenuPaths.IOS + nameof(BuildXCode)
     )]
-    public sealed class BuildXCode : ScriptableBuildStepWithOptions
+    public sealed class BuildXCode : UnityBuildStepWithOptions
     {
         [SerializeField] private bool m_symlinkUnityLibraries = true;
         [SerializeField] private bool m_tryAppend = true;

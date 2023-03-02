@@ -14,7 +14,7 @@ namespace UniTools.Build
         fileName = nameof(BuildWebGL),
         menuName = MenuPaths.WebGL + nameof(BuildWebGL)
     )]
-    public sealed class BuildWebGL : ScriptableBuildStepWithOptions
+    public sealed class BuildWebGL : UnityBuildStepWithOptions
     {
 #if UNITY_WEBGL
         [SerializeField] private CodeOptimization m_codeOptimization = CodeOptimization.Size;

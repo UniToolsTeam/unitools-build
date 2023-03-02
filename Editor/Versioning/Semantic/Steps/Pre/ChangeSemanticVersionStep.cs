@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace UniTools.Build
 {
-    public abstract class ChangeSemanticVersionStep : ScriptableCustomBuildStep
+    public abstract class ChangeSemanticVersionStep : BuildStep
     {
         protected Version Load()
         {

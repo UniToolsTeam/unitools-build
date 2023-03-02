@@ -10,7 +10,7 @@ namespace UniTools.Build
         fileName = nameof(BuildWindows),
         menuName = MenuPaths.Standalone + nameof(BuildWindows)
     )]
-    public sealed class BuildWindows : ScriptableBuildStepWithOptions
+    public sealed class BuildWindows : UnityBuildStepWithOptions
     {
         public override BuildTarget Target => BuildTarget.StandaloneWindows;
 

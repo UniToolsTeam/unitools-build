@@ -8,7 +8,7 @@ namespace UniTools.Build
         fileName = nameof(EnsureDirectoryExists),
         menuName = MenuPaths.IO + nameof(EnsureDirectoryExists)
     )]
-    public sealed class EnsureDirectoryExists : ScriptableCustomBuildStep
+    public sealed class EnsureDirectoryExists : BuildStep
     {
         [SerializeField] private PathProperty m_path = default;
 

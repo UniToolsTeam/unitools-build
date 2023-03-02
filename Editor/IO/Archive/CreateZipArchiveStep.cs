@@ -9,7 +9,7 @@ namespace UniTools.Build
         fileName = nameof(CreateZipArchiveStep),
         menuName = MenuPaths.IO + "Zip Archive"
     )]
-    public sealed class CreateZipArchiveStep : ScriptableCustomBuildStep
+    public sealed class CreateZipArchiveStep : BuildStep
     {
         [SerializeField, Tooltip("The location of the folder that needs to be compressed.")] private PathProperty m_directory = default;
         [SerializeField, Tooltip("The name of the created archive (include extensions. Ex: my.zip).")] private PathProperty m_archiveFileName = default;

@@ -10,7 +10,7 @@ namespace UniTools.Build
         fileName = nameof(BuildApk),
         menuName = MenuPaths.Android + nameof(BuildApk)
     )]
-    public sealed class BuildApk : ScriptableBuildStepWithOptions
+    public sealed class BuildApk : UnityBuildStepWithOptions
     {
         public override BuildTarget Target => BuildTarget.Android;
 
