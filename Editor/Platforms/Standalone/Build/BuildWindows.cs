@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -13,13 +14,17 @@ namespace UniTools.Build
     {
         public override BuildTarget Target => BuildTarget.StandaloneWindows;
 
-        public override async Task<BuildReport> Execute()
+        public override async Task Execute()
         {
             BuildReport report = UnityEditor.BuildPipeline.BuildPlayer(Options);
 
             await Task.CompletedTask;
 
-            return report;
+            BuildSummary summary = report.summary;
+            if (summary.result == BuildResult.Failed)
+            {
+                throw new Exception($"{nameof(BuildPipeline)}: {name} Build failed!");
+            }
         }
     }
 }

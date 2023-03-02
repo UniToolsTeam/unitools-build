@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using UnityEditor;
-using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 namespace UniTools.Build
@@ -16,11 +15,11 @@ namespace UniTools.Build
 
         public override BuildTarget Target => m_successor.Target;
 
-        public override async Task<BuildReport> Execute()
+        public override async Task Execute()
         {
             m_symbols.Apply(UnityEditor.BuildPipeline.GetBuildTargetGroup(Target));
 
-            return await m_successor.Execute();
+            await m_successor.Execute();
         }
     }
 }

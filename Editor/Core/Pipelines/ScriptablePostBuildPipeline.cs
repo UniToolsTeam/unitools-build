@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace UniTools.Build
 {
+    //TODO Has to be removed
     public abstract class ScriptablePostBuildPipeline : ScriptablePreBuildPipeline
     {
         [SerializeField] private ScriptableBuildStep m_build = default;
@@ -19,7 +20,8 @@ namespace UniTools.Build
 
         [SerializeField] private PostBuildStep[] m_postBuild = default;
 
-        public async Task<BuildReport> Build() => await m_build.Execute();
+        // public async Task<BuildReport> Build() => await m_build.Execute();
+        public async Task<BuildReport> Build() => throw new NotImplementedException();
 
         public async Task PostBuild()
         {

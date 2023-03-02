@@ -1,13 +1,14 @@
+using System;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
+using UnityEngine;
 #if UNITY_EDITOR_OSX
 #if UNITY_2022_2_OR_NEWER
 using UnityEditor.Build;
 #endif
 using UnityEditor.OSXStandalone;
 #endif
-using UnityEngine;
 
 namespace UniTools.Build
 {
@@ -18,17 +19,17 @@ namespace UniTools.Build
     public sealed class BuildMacOS : ScriptableBuildStepWithOptions
     {
 #if UNITY_EDITOR_OSX
-        
+
 #if UNITY_2022_2_OR_NEWER
         [SerializeField] private OSArchitecture m_architecture = default;
-#else 
+#else
         [SerializeField] private MacOSArchitecture m_architecture = default;
 #endif
         [SerializeField] private bool m_createXcodeProject = false;
 #endif
         public override BuildTarget Target => BuildTarget.StandaloneOSX;
 
-        public override async Task<BuildReport> Execute()
+        public override async Task Execute()
         {
 #if UNITY_EDITOR_OSX
             UserBuildSettings.architecture = m_architecture;
@@ -41,7 +42,11 @@ namespace UniTools.Build
 
             await Task.CompletedTask;
 
-            return report;
+            BuildSummary summary = report.summary;
+            if (summary.result == BuildResult.Failed)
+            {
+                throw new Exception($"{nameof(BuildPipeline)}: {name} Build failed!");
+            }
         }
     }
 }
