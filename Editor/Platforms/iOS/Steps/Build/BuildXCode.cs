@@ -10,14 +10,14 @@ namespace UniTools.Build
         fileName = nameof(BuildXCode),
         menuName = MenuPaths.IOS + nameof(BuildXCode)
     )]
-    public sealed class BuildXCode : ScriptableBuildStepWithOptions
+    public sealed class BuildXCode : UnityBuildStepWithOptions
     {
         [SerializeField] private bool m_symlinkUnityLibraries = true;
         [SerializeField] private bool m_tryAppend = true;
 
         public override BuildTarget Target => BuildTarget.iOS;
 
-        public override async Task<BuildReport> Execute()
+        public override async Task Execute()
         {
             BuildPlayerOptions buildPlayerOptions = Options;
 
@@ -53,7 +53,11 @@ namespace UniTools.Build
 
             await Task.CompletedTask;
 
-            return report;
+            BuildSummary summary = report.summary;
+            if (summary.result == BuildResult.Failed)
+            {
+                throw new Exception($"{nameof(BuildPipeline)}: {name} Build failed!");
+            }
         }
     }
 }

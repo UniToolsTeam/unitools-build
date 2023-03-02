@@ -8,7 +8,7 @@ namespace UniTools.Build
         fileName = nameof(SetManualProvisionProfile),
         menuName = MenuPaths.IOS + nameof(SetManualProvisionProfile)
     )]
-    public sealed class SetManualProvisionProfile : ScriptableCustomBuildStep
+    public sealed class SetManualProvisionProfile : BuildStep
     {
         [SerializeField] private string m_name = string.Empty;
         [SerializeField] private string m_id = string.Empty;

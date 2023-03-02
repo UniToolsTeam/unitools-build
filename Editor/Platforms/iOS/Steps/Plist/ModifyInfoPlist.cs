@@ -15,7 +15,7 @@ namespace UniTools.Build
         fileName = nameof(ModifyInfoPlist),
         menuName = MenuPaths.IOS + nameof(ModifyInfoPlist)
     )]
-    public sealed class ModifyInfoPlist : ScriptableCustomBuildStep
+    public sealed class ModifyInfoPlist : BuildStep
     {
         [SerializeField] private PathProperty m_pathToXCodeProject = default;
         [SerializeField] private BoolPlistElement[] m_bool = default;

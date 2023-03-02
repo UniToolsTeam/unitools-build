@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace UniTools.Build
 {
-    public sealed class ScriptableBuildPipelinePresenter
+    public sealed class BuildPipelinePresenter
     {
-        private readonly ScriptableBuildPipeline m_buildPipeline = default;
+        private readonly BuildPipeline m_buildPipeline = default;
         private bool m_foldout = false;
 
-        public ScriptableBuildPipelinePresenter(ScriptableBuildPipeline buildPipeline)
+        public BuildPipelinePresenter(BuildPipeline buildPipeline)
         {
             m_buildPipeline = buildPipeline;
         }
@@ -38,7 +38,7 @@ namespace UniTools.Build
 
             if (run)
             {
-                m_buildPipeline.Run();
+                m_buildPipeline.Run().GetAwaiter().OnCompleted(() => { Debug.Log($"Pipeline {m_buildPipeline} is completed!"); });
             }
 
             if (modify)

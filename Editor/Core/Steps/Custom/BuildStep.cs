@@ -1,19 +1,16 @@
 using System;
 using System.Threading.Tasks;
 using UnityEditor;
-using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 namespace UniTools.Build
 {
     /// <summary>
-    /// This step must be user to create a build (artifacts: iOS, Android, etc...) using Unity API
+    /// This type of steps should be user to create any custom behavior for the build pipeline
     /// </summary>
-    public abstract class ScriptableBuildStep : ScriptableObject
+    public abstract class BuildStep : ScriptableObject
     {
-        public abstract BuildTarget Target { get; }
-
-        public abstract Task<BuildReport> Execute();
+        public abstract Task Execute();
 
         [ContextMenu("Run")]
         private void Run()

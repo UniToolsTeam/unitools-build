@@ -10,7 +10,7 @@ namespace UniTools.Build
         fileName = nameof(CopyFileToDirectory),
         menuName = MenuPaths.IO + nameof(CopyFileToDirectory)
     )]
-    public sealed class CopyFileToDirectory : ScriptableCustomBuildStep
+    public sealed class CopyFileToDirectory : BuildStep
     {
         [SerializeField] private PathProperty m_filePath = default;
         [SerializeField] private PathProperty m_destination = default;

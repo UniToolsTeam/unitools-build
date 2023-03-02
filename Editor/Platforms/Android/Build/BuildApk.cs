@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -9,17 +10,21 @@ namespace UniTools.Build
         fileName = nameof(BuildApk),
         menuName = MenuPaths.Android + nameof(BuildApk)
     )]
-    public sealed class BuildApk : ScriptableBuildStepWithOptions
+    public sealed class BuildApk : UnityBuildStepWithOptions
     {
         public override BuildTarget Target => BuildTarget.Android;
 
-        public override async Task<BuildReport> Execute()
+        public override async Task Execute()
         {
             BuildPlayerOptions buildPlayerOptions = Options;
             BuildReport report = UnityEditor.BuildPipeline.BuildPlayer(buildPlayerOptions);
             await Task.CompletedTask;
 
-            return report;
+            BuildSummary summary = report.summary;
+            if (summary.result == BuildResult.Failed)
+            {
+                throw new Exception($"{nameof(BuildPipeline)}: {name} Build failed!");
+            }
         }
     }
 }

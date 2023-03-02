@@ -11,7 +11,7 @@ namespace UniTools.Build
         fileName = nameof(SetAutomaticSigning),
         menuName = MenuPaths.IOS + nameof(SetAutomaticSigning)
     )]
-    public sealed class SetAutomaticSigning : ScriptableCustomBuildStep
+    public sealed class SetAutomaticSigning : BuildStep
     {
         public override async Task Execute()
         {

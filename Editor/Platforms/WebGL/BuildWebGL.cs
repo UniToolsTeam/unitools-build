@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Build;
@@ -13,7 +14,7 @@ namespace UniTools.Build
         fileName = nameof(BuildWebGL),
         menuName = MenuPaths.WebGL + nameof(BuildWebGL)
     )]
-    public sealed class BuildWebGL : ScriptableBuildStepWithOptions
+    public sealed class BuildWebGL : UnityBuildStepWithOptions
     {
 #if UNITY_WEBGL
         [SerializeField] private CodeOptimization m_codeOptimization = CodeOptimization.Size;
@@ -28,7 +29,7 @@ namespace UniTools.Build
 
         public override BuildTarget Target => BuildTarget.WebGL;
 
-        public override async Task<BuildReport> Execute()
+        public override async Task Execute()
         {
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
@@ -44,7 +45,7 @@ namespace UniTools.Build
 #else
             EditorUserBuildSettings.SetPlatformSettings(UnityEditor.BuildPipeline.GetBuildTargetName(BuildTarget.WebGL), "CodeOptimization", "Size");
 #endif
-            
+
 #if UNITY_2022
 			PlayerSettings.SetIl2CppCodeGeneration(NamedBuildTarget.WebGL, m_IL2CPPCodeGeneration);
 #else
@@ -58,7 +59,11 @@ namespace UniTools.Build
 
             await Task.CompletedTask;
 
-            return report;
+            BuildSummary summary = report.summary;
+            if (summary.result == BuildResult.Failed)
+            {
+                throw new Exception($"{nameof(BuildPipeline)}: {name} Build failed!");
+            }
         }
     }
 }

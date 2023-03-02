@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UniTools.Build
 {
-    public abstract class Archive : ScriptableCustomBuildStep
+    public abstract class Archive : BuildStep
     {
         [SerializeField] private PathProperty m_projectPath = new PathProperty("Unity-iPhone.xcodeproj");
         [SerializeField] private PathProperty m_outputPath = new PathProperty("Unity-iPhone.xcarchive");
