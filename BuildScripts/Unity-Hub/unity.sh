@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #This script is usefull to run Unity CLI commands
 
-
 #Read a Unity Version as a first arg (can be empty) in this case the version will be defined from the Project settings.
 UNITY_VERSION="$1"
 #Build Unity Path according to the OS
@@ -40,7 +39,3 @@ echo "Unity path is $UNITY_PATH"
 
 #Execute the command
 "$UNITY_PATH" "$@"
-
-
-
-#$UNITY_PATH -quit -quitTimeout $QUIT_TIMEOUT -batchmode -projectPath $PROJECT_PATH -executeMethod UniTools.Build.BatchModeBuilder.Execute -logFile - "$@"

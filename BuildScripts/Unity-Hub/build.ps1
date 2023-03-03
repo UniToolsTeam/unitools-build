@@ -35,29 +35,3 @@ Get-Content -Path "$BuildLog" -Tail 1 -Wait | Where-Object {
         exit $exitCode
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-# Previous version 
-#
-## Start the Unity process in background thread.
-#Write-Host -NoNewLine 'Building...'
-#$unity = Start-Process -FilePath "$UnityPath" -ArgumentList "-quit -quitTimeout $QuitTimeout -batchmode -projectPath $ProjectPath -executeMethod UniTools.Build.BatchModeBuilder.Execute -logFile $BuildLog $args" -PassThru
-## Wait untill the process will be completed
-#while (!$unity.HasExited)
-#{
-#    Start-Sleep -Seconds 1.0
-#    Write-Host -NoNewLine '.'
-#}
-#Write-Host '.'
-#[string]$code = $unity.ExitCode
-#Write-Output "Build Completed with a code = $code "
-#exit $unity.ExitCode
