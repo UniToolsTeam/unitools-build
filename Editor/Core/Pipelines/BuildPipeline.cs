@@ -30,6 +30,7 @@ namespace UniTools.Build
             foreach (PipelineStep step in m_steps)
             {
                 if (step == null) continue;
+                if (step.Step == null) continue;
 
                 if (step.Skip)
                 {
