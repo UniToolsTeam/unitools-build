@@ -25,6 +25,8 @@ namespace UniTools.Build
 
         private void OnValidate()
         {
+            if (m_steps == null) return;
+
             foreach (PipelineStep step in m_steps)
             {
                 if (step == null) continue;

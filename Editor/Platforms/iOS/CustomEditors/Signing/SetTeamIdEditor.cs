@@ -22,7 +22,7 @@ namespace UniTools.Build
                 EditorGUILayout.BeginVertical();
                 {
                     EditorGUILayout.HelpBox("You can parse Team Id from the Provisioning Profile file", MessageType.Info);
-                    load = GUILayout.Button("Try");
+                    load = GUILayout.Button("From file");
                 }
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.PropertyField(m_teamId);
