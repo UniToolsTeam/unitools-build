@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace UniTools.Build
@@ -8,9 +9,12 @@ namespace UniTools.Build
     /// </summary>
     public abstract class ScriptableBuildParameter<TValue> : ScriptableObject
     {
-        // --awsprofile test --projectdefines DEV
-
         [SerializeField] private TValue m_value = default;
+
+        /// <summary>
+        /// Is this collection if not empty the values can be selected as enum
+        /// </summary>
+        [SerializeField, Tooltip("Add values to this collection to create a popup")] private List<TValue> m_options = default;
 
         /// <summary>
         /// The name of the parameter that can be used inside a command line
@@ -29,6 +33,8 @@ namespace UniTools.Build
                 return m_value;
             }
         }
+
+        public List<TValue> Options => m_options;
 
         protected abstract bool TryParseFromCommandLine(string commandLine, out TValue v);
     }
