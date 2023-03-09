@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace UniTools.Build
@@ -32,6 +34,30 @@ namespace UniTools.Build
 
         public override void OnGUI(string searchContext)
         {
+            // EditorGUILayout.LabelField("Parameters");
+            //
+            // var parameters = ReflectiveEnumerator.GetEnumerableOfType<CommandLineArgument>();
+            //
+            // string m = string.Empty;
+            //
+            // Debug.LogError(parameters.Count());
+            //
+            // foreach (CommandLineArgument parameter in parameters)
+            // {
+            //     
+            //     Debug.LogError(parameter.GetType());
+            //     
+            //     m += parameter.GetType();
+            //     m += " ";
+            // }
+            // EditorGUILayout.LabelField(m);
+            
+            
+            
+
+
+            EditorGUILayout.LabelField("Pipelines");
+
             foreach (BuildPipelinePresenter presenter in m_presenters)
             {
                 presenter.Draw();

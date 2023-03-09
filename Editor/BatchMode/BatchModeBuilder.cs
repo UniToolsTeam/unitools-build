@@ -14,17 +14,23 @@ namespace UniTools.Build
                 throw new Exception($"{nameof(BatchModeBuilder)}: can be run only from the BatchMode!");
             }
 
-            BatchModeParameters parameters = CommandLineParser.Parse<BatchModeParameters>(Environment.CommandLine);
+            const string key = "--pipeline";
+            string pipeline = string.Empty;
 
-            string pipelineName = parameters.Pipeline;
-
-            if (Find(pipelineName) != null)
+            if (!CommandLineParser.TryToParseValue(Environment.CommandLine, key, out object v))
             {
-                await RunBuildPipeline(pipelineName);
+                throw new Exception($"The pipeline is not assigned from the CommandLine. Use {key} to define a pipeline for execution.");
+            }
+
+            pipeline = v.ToString();
+
+            if (Find(pipeline) != null)
+            {
+                await RunBuildPipeline(pipeline);
             }
             else
             {
-                throw new Exception($"Failed to find a pipeline with name {pipelineName}!");
+                throw new Exception($"Failed to find a pipeline with name {pipeline}!");
             }
         }
 

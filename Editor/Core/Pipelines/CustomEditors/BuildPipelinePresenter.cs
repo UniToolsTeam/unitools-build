@@ -19,6 +19,10 @@ namespace UniTools.Build
             bool modify = false;
             if (m_foldout)
             {
+                
+                
+                
+                
                 EditorGUILayout.BeginVertical("box");
                 {
                     m_foldout = EditorGUILayout.Foldout(m_foldout, m_buildPipeline.name);

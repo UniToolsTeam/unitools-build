@@ -5,6 +5,7 @@ namespace UniTools.Build
         public const string Core = nameof(UniTools) + "/";
         public const string IO = Core + "IO/";
         public const string Pipelines = Core + "Pipelines/";
+        public const string Parameters  = Core + "Parameters/";
 
         public const string Build = Core + "Build/";
         public const string Defines = Build + "Defines/";
