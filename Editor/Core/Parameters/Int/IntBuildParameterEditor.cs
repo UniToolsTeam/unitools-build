@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace UniTools.Build
 {
-    [CustomEditor(typeof(StringBuildParameter))]
-    public sealed class ScriptableBuildParameterEditor : Editor
+    [CustomEditor(typeof(IntBuildParameter))]
+    public sealed class IntBuildParameterEditor : Editor
     {
-        private StringBuildParameter m_target = default;
+        private IntBuildParameter m_target = default;
         private SerializedProperty m_value = default;
 
         private void OnEnable()
         {
             m_value = serializedObject.FindProperty(nameof(m_value));
-            m_target = target as StringBuildParameter;
+            m_target = target as IntBuildParameter;
         }
 
         public override void OnInspectorGUI()
@@ -23,7 +23,7 @@ namespace UniTools.Build
 
             EditorGUILayout.BeginHorizontal();
             {
-                EditorGUILayout.LabelField($"CLI: {m_target.Name} {m_value.stringValue}");
+                EditorGUILayout.LabelField($"CLI: {m_target.Name} {m_value.intValue}");
                 copyToClipboard = GUILayout.Button("Copy");
             }
             EditorGUILayout.EndHorizontal();
@@ -32,7 +32,7 @@ namespace UniTools.Build
 
             if (copyToClipboard)
             {
-                EditorGUIUtility.systemCopyBuffer = $"{m_target.Name} {m_value.stringValue}";
+                EditorGUIUtility.systemCopyBuffer = $"{m_target.Name} {m_value.intValue}";
             }
         }
     }
