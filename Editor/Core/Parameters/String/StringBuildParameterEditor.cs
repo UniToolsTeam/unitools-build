@@ -15,34 +15,41 @@ namespace UniTools.Build
         {
             m_value = serializedObject.FindProperty(nameof(m_value));
             m_options = serializedObject.FindProperty(nameof(m_options));
-
             m_target = target as StringBuildParameter;
         }
 
         public override void OnInspectorGUI()
         {
+            Draw(m_target, serializedObject, m_value, m_options);
+        }
+
+        /// <summary>
+        /// This method is using to draw the same editor in different windows 
+        /// </summary>
+        public static void Draw(StringBuildParameter target, SerializedObject serializedObject, SerializedProperty value, SerializedProperty options)
+        {
             bool copyToClipboard = false;
 
-            if (m_target.Options == null || m_target.Options.Count <= 0)
+            if (target.Options == null || target.Options.Count <= 0)
             {
-                EditorGUILayout.PropertyField(m_value);
+                EditorGUILayout.PropertyField(value);
             }
             else
             {
-                int index = m_target.Options.IndexOf(m_value.stringValue);
-                index = EditorGUILayout.Popup(index, m_target.Options.Select(o => o.ToString()).ToArray());
+                int index = target.Options.IndexOf(value.stringValue);
+                index = EditorGUILayout.Popup(index, target.Options.Select(o => o.ToString()).ToArray());
 
-                if (index >= 0 && index <= m_target.Options.Count)
+                if (index >= 0 && index <= target.Options.Count)
                 {
-                    m_value.stringValue = m_target.Options[index];
+                    value.stringValue = target.Options[index];
                 }
             }
 
-            EditorGUILayout.PropertyField(m_options);
+            EditorGUILayout.PropertyField(options);
 
             EditorGUILayout.BeginHorizontal();
             {
-                EditorGUILayout.LabelField($"CLI: {m_target.CliKey} {m_value.stringValue}");
+                EditorGUILayout.LabelField($"CLI: {target.CliKey} {value.stringValue}");
                 copyToClipboard = GUILayout.Button("Copy");
             }
             EditorGUILayout.EndHorizontal();
@@ -51,7 +58,7 @@ namespace UniTools.Build
 
             if (copyToClipboard)
             {
-                EditorGUIUtility.systemCopyBuffer = $"{m_target.CliKey} {m_value.stringValue}";
+                EditorGUIUtility.systemCopyBuffer = $"{target.CliKey} {value.stringValue}";
             }
         }
     }
