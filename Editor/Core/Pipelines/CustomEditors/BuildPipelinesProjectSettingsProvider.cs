@@ -51,15 +51,16 @@ namespace UniTools.Build
 
         public override void OnGUI(string searchContext)
         {
-            EditorGUILayout.LabelField("Parameters");
+            EditorGUILayout.LabelField("Parameters", Styles.H1);
 
             foreach (BuildParameterPresenter presenter in m_parameterPresenters)
             {
                 presenter.Draw();
             }
 
-            EditorGUILayout.LabelField("Pipelines");
-
+            EditorGUILayout.Separator();
+            EditorGUILayout.LabelField("Pipelines", Styles.H1);
+            EditorGUILayout.Space(5);
             foreach (BuildPipelinePresenter presenter in m_pipelinePresenters)
             {
                 presenter.Draw();

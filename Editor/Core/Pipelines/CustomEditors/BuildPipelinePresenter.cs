@@ -28,7 +28,7 @@ namespace UniTools.Build
                 {
                     EditorGUILayout.BeginHorizontal();
                     {
-                        m_foldout = EditorGUILayout.Foldout(m_foldout, m_buildPipeline.name);
+                        m_foldout = EditorGUILayout.Foldout(m_foldout, m_buildPipeline.name, Styles.H2_Foldout);
                         run = GUILayout.Button("Run", GUILayout.Width(100));
                     }
                     EditorGUILayout.EndHorizontal();
@@ -66,7 +66,7 @@ namespace UniTools.Build
             {
                 EditorGUILayout.BeginHorizontal("box");
                 {
-                    m_foldout = EditorGUILayout.Foldout(m_foldout, m_buildPipeline.name);
+                    m_foldout = EditorGUILayout.Foldout(m_foldout, m_buildPipeline.name, Styles.H2_Foldout);
                     run = GUILayout.Button("Run", GUILayout.Width(100));
                 }
                 EditorGUILayout.EndHorizontal();
