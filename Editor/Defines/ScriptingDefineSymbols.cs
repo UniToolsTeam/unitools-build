@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
-using UnityEditor;
 using UnityEngine;
 
 namespace UniTools.Build
@@ -13,13 +13,19 @@ namespace UniTools.Build
     {
         [SerializeField] private List<string> m_defines = new List<string>();
 
-        public void Apply(BuildTargetGroup buildTargetGroup)
-        {
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, ToString());
-        }
+        /// <summary>
+        /// The name of the parameter that can be used inside a command line
+        /// </summary>
+        public string CliKey => $"--{name.ToLower()}";
 
         public override string ToString()
         {
+            //in case 
+            if (Application.isBatchMode && CommandLineParser.TryToParseValue(Environment.CommandLine, CliKey, out object obj))
+            {
+                return obj.ToString();
+            }
+
             if (m_defines.Count == 0)
             {
                 return string.Empty;

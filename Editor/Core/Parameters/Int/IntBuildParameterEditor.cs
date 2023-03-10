@@ -41,7 +41,7 @@ namespace UniTools.Build
 
             EditorGUILayout.BeginHorizontal();
             {
-                EditorGUILayout.LabelField($"CLI: {m_target.Name} {m_value.intValue}");
+                EditorGUILayout.LabelField($"CLI: {m_target.CliKey} {m_value.intValue}");
                 copyToClipboard = GUILayout.Button("Copy");
             }
             EditorGUILayout.EndHorizontal();
@@ -50,7 +50,7 @@ namespace UniTools.Build
 
             if (copyToClipboard)
             {
-                EditorGUIUtility.systemCopyBuffer = $"{m_target.Name} {m_value.intValue}";
+                EditorGUIUtility.systemCopyBuffer = $"{m_target.CliKey} {m_value.intValue}";
             }
         }
     }

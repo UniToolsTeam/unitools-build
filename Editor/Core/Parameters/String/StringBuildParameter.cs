@@ -10,7 +10,7 @@ namespace UniTools.Build
     {
         protected override bool TryParseFromCommandLine(string commandLine, out string v)
         {
-            if (CommandLineParser.TryToParseValue(commandLine, Name, out object obj))
+            if (CommandLineParser.TryToParseValue(commandLine, CliKey, out object obj))
             {
                 v = obj.ToString();
 

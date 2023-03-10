@@ -21,7 +21,8 @@ namespace UniTools.Build
                 throw new Exception("Invalid define symbols added!");
             }
 
-            m_symbols.Apply(m_group);
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(m_group, m_symbols.ToString());
+
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
 
