@@ -16,17 +16,49 @@ namespace UniTools.Build
         public void Draw()
         {
             bool run = false;
-            bool modify = false;
+            bool select = false;
             if (m_foldout)
             {
-                
-                
-                
-                
+                string sh = $"./build.sh --pipeline {m_buildPipeline.name}";
+                string ps = $".\\build.ps1 --pipeline {m_buildPipeline.name}";
+                bool copySh = false;
+                bool copyPs = false;
+
                 EditorGUILayout.BeginVertical("box");
                 {
-                    m_foldout = EditorGUILayout.Foldout(m_foldout, m_buildPipeline.name);
-                    DrawButtons(out run, out modify);
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        m_foldout = EditorGUILayout.Foldout(m_foldout, m_buildPipeline.name);
+                        run = GUILayout.Button("Run", GUILayout.Width(100));
+                    }
+                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUILayout.LabelField("CLI commands:");
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        EditorGUILayout.LabelField($"SH: {sh}");
+                        copySh = GUILayout.Button("Copy");
+                    }
+                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        EditorGUILayout.LabelField($"PS: {ps}");
+                        copyPs = GUILayout.Button("Copy");
+                    }
+                    EditorGUILayout.EndHorizontal();
+
+                    select = GUILayout.Button("Select Pipeline", GUILayout.Width(250));
+
+                    if (copySh)
+                    {
+                        EditorGUIUtility.systemCopyBuffer = sh;
+                    }
+
+                    if (copyPs)
+                    {
+                        EditorGUIUtility.systemCopyBuffer = ps;
+                    }
                 }
                 EditorGUILayout.EndVertical();
             }
@@ -35,30 +67,23 @@ namespace UniTools.Build
                 EditorGUILayout.BeginHorizontal("box");
                 {
                     m_foldout = EditorGUILayout.Foldout(m_foldout, m_buildPipeline.name);
-                    DrawButtons(out run, out modify);
+                    run = GUILayout.Button("Run", GUILayout.Width(100));
                 }
                 EditorGUILayout.EndHorizontal();
             }
 
             if (run)
             {
-                m_buildPipeline.Run().GetAwaiter().OnCompleted(() => { Debug.Log($"Pipeline {m_buildPipeline} is completed!"); });
+                if (EditorUtility.DisplayDialog($"Run {m_buildPipeline.name} pipeline?", "", "Yes", "No"))
+                {
+                    m_buildPipeline.Run().GetAwaiter().OnCompleted(() => { Debug.Log($"Pipeline {m_buildPipeline} is completed!"); });
+                }
             }
 
-            if (modify)
+            if (select)
             {
                 EditorGUIUtility.PingObject(m_buildPipeline);
             }
-        }
-
-        private void DrawButtons(out bool run, out bool modify)
-        {
-            EditorGUILayout.BeginHorizontal();
-            {
-                modify = GUILayout.Button("Modify", GUILayout.Width(100));
-                run = GUILayout.Button("Run", GUILayout.Width(100));
-            }
-            EditorGUILayout.EndHorizontal();
         }
     }
 }
