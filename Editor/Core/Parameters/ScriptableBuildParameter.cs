@@ -14,7 +14,7 @@ namespace UniTools.Build
         /// <summary>
         /// The name of the parameter that can be used inside a command line
         /// </summary>
-        public string CliKey => $"--{name.ToLower()}";
+        public string CliKey => $"--{name.Replace(" ", string.Empty).ToLower()}";
 
         /// <summary>
         /// Is this collection if not empty the values can be selected as enum

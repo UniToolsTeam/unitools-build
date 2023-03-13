@@ -20,7 +20,9 @@ namespace UniTools.Build
             m_options = m_serializedObject.FindProperty(nameof(m_options));
         }
 
-        public override void Draw()
+        public override string CliKey => m_target.CliKey;
+
+        public override void Draw(bool duplicated)
         {
             bool select = false;
             if (m_foldout)
@@ -33,6 +35,10 @@ namespace UniTools.Build
                         select = GUILayout.Button("Select", GUILayout.Width(100));
                     }
                     EditorGUILayout.EndHorizontal();
+                    if (duplicated)
+                    {
+                        EditorGUILayout.HelpBox("The parameter name is duplicated! Logical errors can happen during the batch mode call!", MessageType.Warning);
+                    }
 
                     StringBuildParameterEditor.Draw(m_target, m_serializedObject, m_value, m_options);
                 }
@@ -42,8 +48,17 @@ namespace UniTools.Build
             {
                 EditorGUILayout.BeginHorizontal("box");
                 {
-                    m_foldout = EditorGUILayout.Foldout(m_foldout, m_target.name,Styles.H2_Foldout);
+                    Color color = GUI.color;
+
+                    if (duplicated)
+                    {
+                        GUI.color = Color.red;
+                    }
+
+                    m_foldout = EditorGUILayout.Foldout(m_foldout, m_target.name, Styles.H2_Foldout);
                     select = GUILayout.Button("Select", GUILayout.Width(100));
+
+                    GUI.color = color;
                 }
                 EditorGUILayout.EndHorizontal();
             }
