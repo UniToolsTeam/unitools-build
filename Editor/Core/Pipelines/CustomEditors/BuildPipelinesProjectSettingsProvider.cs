@@ -56,11 +56,18 @@ namespace UniTools.Build
 
         public override void OnGUI(string searchContext)
         {
-            EditorGUILayout.LabelField("Parameters", Styles.H1);
-
-            foreach (BuildParameterPresenter presenter in m_parameterPresenters)
+            if (m_parameterPresenters.Count > 0)
             {
-                presenter.Draw(m_allParameterKeys.Count(k => k.Equals(presenter.CliKey)) > 1);
+                EditorGUILayout.LabelField("Parameters", Styles.H1);
+
+                foreach (BuildParameterPresenter presenter in m_parameterPresenters)
+                {
+                    presenter.Draw(m_allParameterKeys.Count(k => k.Equals(presenter.CliKey)) > 1);
+                }
+            }
+            else
+            {
+                //TODO add a link to the documentation
             }
 
             EditorGUILayout.Separator();

@@ -11,6 +11,8 @@ namespace UniTools.Build
     )]
     public sealed class BuildPipeline : ScriptableObject
     {
+        //TODO Notes for the custom editor 
+        //https://forum.unity.com/threads/solved-propertydrawer-on-array-elements-with-different-heights.542194/
         [Serializable]
         private sealed class PipelineStep
         {
