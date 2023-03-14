@@ -14,6 +14,7 @@ namespace UniTools.Build
         private readonly List<BuildPipelinePresenter> m_pipelinePresenters = new List<BuildPipelinePresenter>();
         private readonly List<BuildParameterPresenter> m_parameterPresenters = new List<BuildParameterPresenter>();
         private readonly List<string> m_allParameterKeys = new List<string>();
+        private readonly List<ScriptingDefineSymbolsPresenter> m_defineSymbolsPresenters = new List<ScriptingDefineSymbolsPresenter>();
 
         private BuildPipelinesProjectSettingsProvider(string path)
             : base(path, SettingsScope.Project)
@@ -43,6 +44,15 @@ namespace UniTools.Build
 
             m_allParameterKeys.AddRange(m_parameterPresenters.Select(k => k.CliKey));
 
+            //Find defines
+            guids = AssetDatabase.FindAssets($"t:{nameof(ScriptingDefineSymbols)}");
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                ScriptingDefineSymbols define = AssetDatabase.LoadAssetAtPath<ScriptingDefineSymbols>(path);
+                m_defineSymbolsPresenters.Add(new ScriptingDefineSymbolsPresenter(define));
+            }
+
             //Find pipelines
             m_pipelinePresenters.Clear();
             guids = AssetDatabase.FindAssets($"t:{nameof(BuildPipeline)}");
@@ -68,6 +78,14 @@ namespace UniTools.Build
             else
             {
                 //TODO add a link to the documentation
+            }
+
+            EditorGUILayout.Separator();
+            EditorGUILayout.LabelField("Defines", Styles.H1);
+            EditorGUILayout.Space(5);
+            foreach (ScriptingDefineSymbolsPresenter presenter in m_defineSymbolsPresenters)
+            {
+                presenter.Draw();
             }
 
             EditorGUILayout.Separator();
