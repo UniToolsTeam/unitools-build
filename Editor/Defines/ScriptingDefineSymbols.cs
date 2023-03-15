@@ -9,7 +9,7 @@ namespace UniTools.Build
         fileName = nameof(ScriptingDefineSymbols),
         menuName = MenuPaths.Defines + "DefineSymbols"
     )]
-    public sealed class ScriptingDefineSymbols : ScriptableObject
+    public sealed class ScriptingDefineSymbols : ScriptableBuildParameter
     {
         [Serializable]
         public sealed class DefineSymbol
@@ -19,11 +19,7 @@ namespace UniTools.Build
         }
 
         [SerializeField] private List<DefineSymbol> m_defines = new List<DefineSymbol>();
-
-        /// <summary>
-        /// The name of the parameter that can be used inside a command line
-        /// </summary>
-        public string CliKey => $"--{name.ToLower()}";
+        public override string CliCommand => $"{CliKey} \"{ToString()}\"";
 
         public override string ToString()
         {
