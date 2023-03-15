@@ -24,6 +24,7 @@ namespace UniTools.Build
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             //Find parameters
+            List<ScriptableBuildParameter> parameters = new List<ScriptableBuildParameter>();
             m_parameterPresenters.Clear();
             m_allParameterKeys.Clear();
             string[] guids = AssetDatabase.FindAssets($"t:{nameof(StringBuildParameter)}");
@@ -32,6 +33,7 @@ namespace UniTools.Build
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 StringBuildParameter parameter = AssetDatabase.LoadAssetAtPath<StringBuildParameter>(path);
                 m_parameterPresenters.Add(new StringBuildParameterPresenter(parameter));
+                parameters.Add(parameter);
             }
 
             guids = AssetDatabase.FindAssets($"t:{nameof(IntBuildParameter)}");
@@ -40,17 +42,20 @@ namespace UniTools.Build
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 IntBuildParameter parameter = AssetDatabase.LoadAssetAtPath<IntBuildParameter>(path);
                 m_parameterPresenters.Add(new IntBuildParameterPresenter(parameter));
+                parameters.Add(parameter);
             }
 
             m_allParameterKeys.AddRange(m_parameterPresenters.Select(k => k.CliKey));
 
             //Find defines
+            m_defineSymbolsPresenters.Clear();
             guids = AssetDatabase.FindAssets($"t:{nameof(ScriptingDefineSymbols)}");
             foreach (string guid in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 ScriptingDefineSymbols define = AssetDatabase.LoadAssetAtPath<ScriptingDefineSymbols>(path);
                 m_defineSymbolsPresenters.Add(new ScriptingDefineSymbolsPresenter(define));
+                parameters.Add(define);
             }
 
             //Find pipelines
@@ -60,7 +65,7 @@ namespace UniTools.Build
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 BuildPipeline pipline = AssetDatabase.LoadAssetAtPath<BuildPipeline>(path);
-                m_pipelinePresenters.Add(new BuildPipelinePresenter(pipline));
+                m_pipelinePresenters.Add(new BuildPipelinePresenter(pipline, parameters));
             }
         }
 

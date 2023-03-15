@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -6,21 +7,29 @@ namespace UniTools.Build
     public sealed class BuildPipelinePresenter
     {
         private readonly BuildPipeline m_buildPipeline = default;
+        private readonly List<ScriptableBuildParameter> m_parameters = default;
         private bool m_foldout = false;
 
-        public BuildPipelinePresenter(BuildPipeline buildPipeline)
+        public BuildPipelinePresenter(BuildPipeline buildPipeline, IEnumerable<ScriptableBuildParameter> parameters)
         {
             m_buildPipeline = buildPipeline;
+            m_parameters = new List<ScriptableBuildParameter>(parameters);
         }
 
         public void Draw()
         {
             bool run = false;
             bool select = false;
+            string command = string.Empty;
+            foreach (ScriptableBuildParameter p in m_parameters)
+            {
+                command += $" {p.CliCommand} ";
+            }
+
             if (m_foldout)
             {
-                string sh = $"./build.sh --pipeline {m_buildPipeline.name}";
-                string ps = $".\\build.ps1 --pipeline {m_buildPipeline.name}";
+                string sh = $"./build.sh --pipeline {m_buildPipeline.name} {command}";
+                string ps = $".\\build.ps1 --pipeline {m_buildPipeline.name} {command}";
                 bool copySh = false;
                 bool copyPs = false;
 
