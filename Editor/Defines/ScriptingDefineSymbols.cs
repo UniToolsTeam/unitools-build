@@ -11,7 +11,14 @@ namespace UniTools.Build
     )]
     public sealed class ScriptingDefineSymbols : ScriptableObject
     {
-        [SerializeField] private List<string> m_defines = new List<string>();
+        [Serializable]
+        public sealed class DefineSymbol
+        {
+            public string Value = "MY_DEFINE";
+            public bool Enabled = true;
+        }
+
+        [SerializeField] private List<DefineSymbol> m_defines = new List<DefineSymbol>();
 
         /// <summary>
         /// The name of the parameter that can be used inside a command line
@@ -37,10 +44,16 @@ namespace UniTools.Build
 
             for (int i = 0; i < last; i++)
             {
-                builder.Append(m_defines[i]).Append(";");
+                if (m_defines[i].Enabled)
+                {
+                    builder.Append(m_defines[i].Value).Append(";");
+                }
             }
 
-            builder.Append(m_defines[last]);
+            if (m_defines[last].Enabled)
+            {
+                builder.Append(m_defines[last].Value);
+            }
 
             return builder.ToString();
         }
