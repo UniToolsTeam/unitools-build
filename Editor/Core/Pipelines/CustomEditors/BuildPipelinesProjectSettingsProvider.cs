@@ -45,6 +45,7 @@ namespace UniTools.Build
             m_allParameterKeys.AddRange(m_parameterPresenters.Select(k => k.CliKey));
 
             //Find defines
+            m_defineSymbolsPresenters.Clear();
             guids = AssetDatabase.FindAssets($"t:{nameof(ScriptingDefineSymbols)}");
             foreach (string guid in guids)
             {
