@@ -17,6 +17,8 @@ namespace UniTools.Build
         public override async Task Execute()
         {
             BuildPlayerOptions buildPlayerOptions = Options;
+            EditorUserBuildSettings.buildAppBundle = false;
+            EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
             BuildReport report = UnityEditor.BuildPipeline.BuildPlayer(buildPlayerOptions);
             await Task.CompletedTask;
 
