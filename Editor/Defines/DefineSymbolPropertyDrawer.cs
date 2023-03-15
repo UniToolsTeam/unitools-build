@@ -14,9 +14,15 @@ namespace UniTools.Build
             SerializedProperty value = property.FindPropertyRelative("Value");
             SerializedProperty enabled = property.FindPropertyRelative("Enabled");
             enabled.boolValue = EditorGUI.Toggle(enabledRect, enabled.boolValue);
-            GUI.enabled = enabled.boolValue;
+
+            Color color = GUI.color;
+            if (!enabled.boolValue)
+            {
+                GUI.color = new Color(color.r, color.g, color.b, 0.5f);
+            }
+
             value.stringValue = EditorGUI.TextField(valueRect, value.stringValue).Replace(" ", "_");
-            GUI.enabled = true;
+            GUI.color = color;
         }
     }
 }
