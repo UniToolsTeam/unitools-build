@@ -46,7 +46,7 @@ namespace UniTools.Build
             EditorUserBuildSettings.SetPlatformSettings(UnityEditor.BuildPipeline.GetBuildTargetName(BuildTarget.WebGL), "CodeOptimization", "Size");
 #endif
 
-#if UNITY_2022
+#if UNITY_2022_1_OR_NEWER
 			PlayerSettings.SetIl2CppCodeGeneration(NamedBuildTarget.WebGL, m_IL2CPPCodeGeneration);
 #else
             EditorUserBuildSettings.il2CppCodeGeneration = m_IL2CPPCodeGeneration;
