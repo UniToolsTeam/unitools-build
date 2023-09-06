@@ -16,7 +16,10 @@ namespace UniTools.Build
     )]
     public sealed class ExportIpa : DistributeIosApplicationStep
     {
+#pragma warning disable
+        //Pragma used to avoid miss values on another platform. Can't not be closed #if UNITY_IOS
         [SerializeField, Tooltip("The method must correspond to the provision profile")] private ExportMethods m_method = ExportMethods.AdHoc;
+#pragma warning restore
 
         public override async Task Execute()
         {

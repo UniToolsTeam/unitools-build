@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEngine;
 #if UNITY_IOS
@@ -9,7 +10,10 @@ namespace UniTools.Build
     public abstract class DistributeIosApplicationStep : BuildStep
     {
         [SerializeField, Tooltip("Can be found at Apple Developer Console")] private string m_teamId = string.Empty;
+#pragma warning disable
+        //Pragma used to avoid miss values on another platform. Can't not be closed #if UNITY_IOS
         [SerializeField] private string m_provisioningProfileName = default;
+#pragma warning restore
         [SerializeField] private string m_bundleIdentifier = default;
         [SerializeField] private bool m_uploadBitcode = false;
         [SerializeField] private bool m_uploadSymbols = false;
@@ -26,7 +30,7 @@ namespace UniTools.Build
                 return Path.Combine(m_pathToXCodeProject.ToString(), fileName);
 
 #if !UNITY_IOS
-                throw new System.Exception($"{nameof(DistributeIosApplicationStep)}: unsupported platform for {m_bundleIdentifier}, {m_uploadBitcode}, {m_uploadSymbols}");
+                throw new Exception($"{nameof(DistributeIosApplicationStep)}: unsupported platform for {m_bundleIdentifier}, {m_uploadBitcode}, {m_uploadSymbols}");
 #endif
             }
         }
