@@ -8,8 +8,9 @@ namespace UniTools.Build
     {
         [SerializeField] private PathProperty m_path = default;
         [SerializeField] private bool m_developmentBuild = false;
+#if UNITY_2021_2_OR_NEWER
         [SerializeField] private bool m_cleanBuildCache = false;
-
+#endif
         protected BuildPlayerOptions Options
         {
             get
@@ -25,10 +26,12 @@ namespace UniTools.Build
                     buildPlayerOptions.options = BuildOptions.Development;
                 }
 
+#if UNITY_2021_2_OR_NEWER
                 if (m_cleanBuildCache)
                 {
                     buildPlayerOptions.options |= BuildOptions.CleanBuildCache;
                 }
+#endif
 
                 return buildPlayerOptions;
             }

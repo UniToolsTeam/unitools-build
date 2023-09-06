@@ -32,11 +32,12 @@ namespace UniTools.Build
             }
 
             EditorGUILayout.HelpBox("If the CLI tool is installed but not visible, try to: \n-recompile the code base or restart Unity Editor\n-check the PATH in the \"Tools/CLI/UnityEnvironment\".", MessageType.Info);
-
+#if UNITY_2021_1_OR_NEWER
             if (EditorGUILayout.LinkButton("How to change PATH in UnityEnvironment?"))
             {
                 Application.OpenURL("https://github.com/UniToolsTeam/unitools-cli#unity-enviroment");
             }
+#endif
         }
 
         public override void OnDeactivate()

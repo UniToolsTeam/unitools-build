@@ -22,8 +22,6 @@ namespace UniTools.Build
 
 #if UNITY_2022_2_OR_NEWER
         [SerializeField] private OSArchitecture m_architecture = default;
-#else
-        [SerializeField] private MacOSArchitecture m_architecture = default;
 #endif
         [SerializeField] private bool m_createXcodeProject = false;
 #endif
@@ -32,7 +30,10 @@ namespace UniTools.Build
         public override async Task Execute()
         {
 #if UNITY_EDITOR_OSX
+
+#if UNITY_2022_2_OR_NEWER
             UserBuildSettings.architecture = m_architecture;
+#endif
             UserBuildSettings.createXcodeProject = m_createXcodeProject;
 #endif
             AssetDatabase.Refresh();
