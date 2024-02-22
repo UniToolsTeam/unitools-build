@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
-#if UNITY_WEBGL
+#if UNITY_WEBGL && !(UNITY_2022_1_OR_NEWER)
 using UnityEditor.WebGL;
 #endif
 
@@ -16,9 +16,10 @@ namespace UniTools.Build
     )]
     public sealed class BuildWebGL : UnityBuildStepWithOptions
     {
-#if UNITY_WEBGL
+#if UNITY_WEBGL && !(UNITY_2022_1_OR_NEWER)
         [SerializeField] private CodeOptimization m_codeOptimization = CodeOptimization.Size;
 #endif
+
 
 #if UNITY_2021_2_OR_NEWER
         [SerializeField] private Il2CppCodeGeneration m_IL2CPPCodeGeneration = Il2CppCodeGeneration.OptimizeSize;
@@ -55,7 +56,7 @@ namespace UniTools.Build
             PlayerSettings.WebGL.decompressionFallback = m_decompressionFallback;
 #endif
 
-#if UNITY_WEBGL
+#if UNITY_WEBGL && !(UNITY_2022_1_OR_NEWER)
             EditorUserBuildSettings.SetPlatformSettings(UnityEditor.BuildPipeline.GetBuildTargetName(BuildTarget.WebGL), "CodeOptimization", m_codeOptimization.ToString());
 #else
             EditorUserBuildSettings.SetPlatformSettings(UnityEditor.BuildPipeline.GetBuildTargetName(BuildTarget.WebGL), "CodeOptimization", "Size");
