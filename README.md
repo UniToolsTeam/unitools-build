@@ -1,36 +1,36 @@
 # UniTools Build
 
-Editor-пакет для послідовної збірки Unity-проєктів через ScriptableObject-кроки. UPM `com.unitools.build` `0.1.10-preview`, namespace/assembly `UniTools.Build`, MIT. Кроки можна виконувати з Editor або batch mode. Інструкції для ШІ — [AGENTS.md](AGENTS.md).
+An Editor package for building Unity projects sequentially through ScriptableObject steps. UPM `com.unitools.build` `0.1.10-preview`, namespace/assembly `UniTools.Build`, MIT license. Steps run in the Editor or batch mode. AI agent instructions are in [AGENTS.md](AGENTS.md).
 
-## Інсталяція
+## Installation
 
-Звичайний Git UPM entry:
+Standard Git UPM entry:
 
 ```json
 "com.unitools.build": "https://github.com/UniToolsTeam/unitools-build.git#master"
 ```
 
-Для контрольованої локальної копії додайте SSH-сабмодуль у корені **Unity-проєкту** з дозволом власника Git:
+For a managed local copy, add an SSH submodule from the **Unity project root**, with permission from the Git repository owner:
 
 ```sh
 git submodule add -b master git@github.com:UniToolsTeam/unitools-build.git Packages/com.unitools.build
 ```
 
-Якщо Unity-проєкт — підкаталог іншого repository, prefix шляху додається від кореня repository. UPM entry замінюється на:
+If the Unity project is a subdirectory of another repository, prefix the path relative to that repository's root. Replace the UPM entry with:
 
 ```json
 "com.unitools.build": "file:com.unitools.build"
 ```
 
-Submodule фіксує конкретний commit; `branch = master` не оновлює його автоматично. Fresh clone потребує дозволеного `git submodule update --init --recursive`. SSH account/host alias налаштовує власник машини, не пакет.
+The submodule pins a specific commit; `branch = master` does not update it automatically. A fresh clone requires an authorized `git submodule update --init --recursive`. The machine owner configures the SSH account/host alias; the package does not.
 
-Зовнішніх UPM-залежностей немає. Код лише Editor; iOS Xcode API потребує iOS module та активного iOS target. Upstream minimum у manifest — Unity `2019.1`; поточна перевірка — `6000.6.3f1`, старі версії повторно не перевірені. Для builds потрібні platform modules; для iOS archive/export — macOS, Xcode та signing credentials.
+There are no external UPM dependencies. All code is Editor-only; the iOS Xcode API requires the iOS module and an active iOS target. The upstream minimum in the manifest is Unity `2019.1`; the version currently verified is `6000.6.3f1`, and older versions have not been reverified. Builds require platform modules; iOS archive/export requires macOS, Xcode, and signing credentials.
 
-## Pipeline та параметри
+## Pipelines and parameters
 
-Створіть asset через **Create → UniTools → Pipeline**, додайте `BuildStep` assets у `m_steps` у потрібному порядку. **Context Menu → Run** або **Project Settings → UniTools → Build → Run** запускає його. Успішний крок повністю завершує свій Task перед наступним; помилка зупиняє pipeline. Порожні/null кроки — configuration errors, `Skip` — явний пропуск. Один pipeline asset не запускається повторно під час `Run`.
+Create an asset through **Create → UniTools → Pipeline**, then add `BuildStep` assets to `m_steps` in the required order. Run it through **Context Menu → Run** or **Project Settings → UniTools → Build → Run**. Each successful step completes its entire Task before the next step starts; an error stops the pipeline. Empty/null steps are configuration errors; `Skip` is an explicit omission. Do not start the same pipeline asset again while `Run` is active.
 
-Немає окремих Pre/Post base classes: успадковуйте **`BuildStep`**, додавайте операції до одного впорядкованого списку. Наприклад:
+There are no separate Pre/Post base classes: derive from **`BuildStep`** and add operations to a single ordered list. For example:
 
 ```csharp
 using System.Threading.Tasks;
@@ -45,15 +45,15 @@ public sealed class WaitBuildStep : BuildStep
 }
 ```
 
-`UnityBuildStepWithOptions` створює BuildPlayerOptions з enabled scenes та serialized output/development/clean-cache settings. Готові steps: APK/AAB, macOS/Windows, iOS Xcode, WebGL; archive/export/upload; signing; defines; numeric version increment; paths/copy/delete/ZIP. Тільки `BuildResult.Succeeded` є успіхом. Pipeline не виконує автоматичний rollback: signing/version/defines та platform settings залишаються зміненими.
+`UnityBuildStepWithOptions` creates BuildPlayerOptions from enabled scenes and serialized output/development/clean-cache settings. Available steps cover APK/AAB, macOS/Windows, iOS Xcode, WebGL; archive/export/upload; signing; defines; numeric version increments; and paths/copy/delete/ZIP. Only `BuildResult.Succeeded` counts as success. The pipeline does not roll back changes automatically: signing/version/defines and platform settings remain changed.
 
-`StringBuildParameter`, `IntBuildParameter`, `ScriptingDefineSymbols` можна перевизначити в batch. Ключ — назва asset без пробілів, lowercase invariant, із `--`; наприклад `Release Notes` → `--releasenotes`. Значення з пробілами обгортайте лапками. Підтримано `--key=value`, empty string і від’ємні числа; malformed integer — помилка. Ключі параметрів мають бути унікальними й не конфліктувати з `--pipeline` або Unity arguments.
+`StringBuildParameter`, `IntBuildParameter`, and `ScriptingDefineSymbols` can be overridden in batch mode. A key is the asset name without spaces, converted to invariant lowercase and prefixed with `--`; for example, `Release Notes` → `--releasenotes`. Quote values containing spaces. The parser supports `--key=value`, empty strings, and negative numbers; a malformed integer is an error. Parameter keys must be unique and must not conflict with `--pipeline` or Unity arguments.
 
-Version steps використовують `System.Version`, 2–4 числові компоненти, без SemVer suffixes; increment зберігає інші компоненти.
+Version steps use `System.Version`, with 2–4 numeric components and no SemVer suffixes; incrementing preserves the other components.
 
 ## Batch mode
 
-Із кореня Unity-проєкту:
+From the Unity project root:
 
 ```sh
 /path/to/Unity -batchmode -projectPath "$PWD" \
@@ -61,50 +61,50 @@ Version steps використовують `System.Version`, 2–4 числов�
   --pipeline "Assets/Build/Release Pipeline.asset" -logFile -
 ```
 
-Можна передати унікальне exact asset name замість path. Дублікати імен відхиляються. Runner завершує Editor з **exit 0** лише після всіх Tasks, із **exit 1** при помилці. **Не передавайте `-quit`** цьому entry point: його asynchronous completion потребує власного lifetime. Загальні правила `-executeMethod`, `-batchmode` та завершення Editor описані в [Unity CLI reference](https://docs.unity3d.com/6000.0/Documentation/Manual/EditorCommandLineArguments.html).
+A unique exact asset name can be supplied instead of a path. Duplicate names are rejected. The runner exits the Editor with **exit 0** only after all Tasks complete, or **exit 1** on error. **Do not pass `-quit`** to this entry point: it manages its own lifetime to await asynchronous completion. General rules for `-executeMethod`, `-batchmode`, and Editor termination are described in the [Unity CLI reference](https://docs.unity3d.com/6000.0/Documentation/Manual/EditorCommandLineArguments.html).
 
-Runner зберігає GUID pipeline та наступний крок у SessionState; після синхронного `ApplyDefines` чекає compilation/domain reload і продовжує. Custom async step не повинен сам перезавантажувати assemblies до завершення Task. Editor Run для pipeline, який змінює defines, замініть batch-запуском. Recovery після crash/restart та cancellation не реалізовані; timeout у CI має задавати зовнішній runner.
+The runner stores the pipeline GUID and next step in SessionState; after a synchronous `ApplyDefines`, it waits for compilation/domain reload and continues. A custom async step must not reload assemblies before its Task completes. Use batch mode for pipelines whose Editor Run would change defines. Recovery after a crash/restart and cancellation are not implemented; an external runner must provide the CI timeout.
 
-Wrappers у `BuildScripts/Unity-Hub/` можна запускати без копіювання, але working directory має бути коренем Unity-проєкту:
+Wrappers in `BuildScripts/Unity-Hub/` can be run without copying them, but the working directory must be the Unity project root:
 
 ```sh
 bash Packages/com.unitools.build/BuildScripts/Unity-Hub/build.sh \
   "/path with spaces/to/Unity" --pipeline "Release Pipeline"
 ```
 
-`build.sh` визначає installed Hub Editor через ProjectVersion.txt; optional first argument або `UNITOOLS_UNITY_PATH` задає executable. `unity.sh` — generic wrapper, optional first argument — executable або Unity version; решта аргументів передаються без змін. PowerShell `build.ps1`/`unity.ps1` і `build.bat` використовують Windows Hub path чи `UNITOOLS_UNITY_PATH`, чекають завершення process і повертають його exit code. PowerShell build пише `PipelineResults.log`.
+`build.sh` locates the installed Hub Editor using ProjectVersion.txt; an optional first argument or `UNITOOLS_UNITY_PATH` selects the executable. `unity.sh` is a generic wrapper; its optional first argument is an executable or a Unity version, and all remaining arguments are passed unchanged. PowerShell `build.ps1`/`unity.ps1` and `build.bat` use the Windows Hub path or `UNITOOLS_UNITY_PATH`, wait for the process to finish, and return its exit code. The PowerShell build writes `PipelineResults.log`.
 
 ## CLI
 
-**Project Settings → UniTools → CLI** показує зареєстровані tools; **Tools → CLI → UnityEnvironment** — environment, успадкований Editor. `[assembly: PathVariable("/your/tool/directory")]` доповнює PATH process, зі стандартним separator. Не додавайте machine paths до reusable package.
+**Project Settings → UniTools → CLI** shows registered tools; **Tools → CLI → UnityEnvironment** shows the environment inherited by the Editor. `[assembly: PathVariable("/your/tool/directory")]` appends to the process PATH using the standard separator. Do not add machine-specific paths to a reusable package.
 
 ```csharp
 ToolResult result = CommandLine.Default.Execute("echo Hello");
 if (result.ExitCode != 0) throw new BuildStepFailedException(result.Error);
 ```
 
-`CommandLine.Execute` виконує shell-команду синхронно. stdout/stderr читаються одночасно; довга команда все одно блокує caller, timeout/cancellation не вбудовані. Літеральне значення/шлях обгортайте `CommandLine.QuoteArgument(value)`. Raw command strings та `Archive.m_extraArgs` мають бути довіреною конфігурацією. Windows cmd має власні правила expansions; QuoteArgument не робить довільний shell input безпечним.
+`CommandLine.Execute` runs a shell command synchronously. stdout/stderr are read concurrently; a long command still blocks its caller, and timeout/cancellation is not built in. Wrap literal values/paths with `CommandLine.QuoteArgument(value)`. Raw command strings and `Archive.m_extraArgs` must be trusted configuration. Windows cmd has its own expansion rules; QuoteArgument does not make arbitrary shell input safe.
 
-`Cli.Tool<T>()` повертає перший зареєстрований tool цього типу або null; `Cli.Tool(name)` потребує exact registered executable key. Готові tools — shell, path resolver, Tar, Zip, XCodeBuild (реєструється лише на iOS target). `IsInstalled` перевіряє існування файлу, не його успішний запуск.
+`Cli.Tool<T>()` returns the first registered tool of that type or null; `Cli.Tool(name)` requires the exact registered executable key. Available tools are the shell, path resolver, Tar, Zip, and XCodeBuild (registered only on the iOS target). `IsInstalled` checks file existence, not whether the executable can run successfully.
 
-Custom tool: успадкуйте `BaseCliTool`, створіть `BaseCliToolAttribute` із `Create()` та додайте assembly attribute. Generic tool: `[assembly: CliTool("executable")]` або `[assembly: CliToolPath("executable", "/absolute/path")]`. Shell paths із пробілами підтримані. Перевіряйте `ToolResult.ExitCode` у кожному build step.
+For a custom tool, derive from `BaseCliTool`, create a `BaseCliToolAttribute` with `Create()`, and add an assembly attribute. For a generic tool, use `[assembly: CliTool("executable")]` or `[assembly: CliToolPath("executable", "/absolute/path")]`. Shell paths containing spaces are supported. Check `ToolResult.ExitCode` in every build step.
 
-IO копії перевіряють джерело до видалення призначення й відхиляють overlap. ZIP step використовує .NET, включає hidden files і створює archive поза джерелом. `m_archiveFileName` може бути абсолютним або відносним до source folder, наприклад `../output.zip`. Output усередині source відхиляється; попередній ZIP замінюється, а не доповнюється stale entries. Symlink aliases потребують авторської перевірки.
+IO copy operations validate the source before deleting the destination and reject overlapping paths. The ZIP step uses .NET, includes hidden files, and creates an archive outside the source tree. `m_archiveFileName` can be absolute or relative to the source folder, for example `../output.zip`. Output inside the source is rejected; an existing ZIP is replaced rather than updated with stale entries. Authors must check symlink aliases themselves.
 
-## Рев'ю та перевірки — 12.10.2026
+## Review and verification — 2026-10-12
 
-Рев'ю від upstream `master`, commit `0e8f482178de0c3b2a8c8ff0c6631d0631cc3417`: виправлено async callbacks/CI exit та reload continuation, parsing/quoting, process pipe deadlock/disposal, PATH, build result/disabled scenes, null конфігурацію, copy overlap, ZIP, iOS plist parsing та obsolete Unity APIs. Public type/assembly identities, version і original GUIDs збережені. Застарілі README приклади Pre/Post classes замінені actual API.
+Reviewed from upstream `master`, commit `0e8f482178de0c3b2a8c8ff0c6631d0631cc3417`: fixed async callbacks/CI exit and reload continuation, parsing/quoting, process pipe deadlocks/disposal, PATH, build results/disabled scenes, null configuration, copy overlap, ZIP, iOS plist parsing, and obsolete Unity APIs. Public type/assembly identities, the version, and original GUIDs are preserved. Outdated README examples using Pre/Post classes were replaced with the actual API.
 
-Перевірено Unity `6000.6.3f1` на macOS:
+Verified with Unity `6000.6.3f1` on macOS:
 
-- Host compile та `dotnet build UniTools.Build.csproj --no-restore` (.NET SDK `10.0.401`) — **0 warnings / 0 errors**. У поточному Unity Console також 0/0; історія transient compiler/Pipeline diagnostics збережена.
-- Мінімальний host лише з цим пакетом, без game/Test Framework dependencies: Standalone Editor compile — **0 compiler warnings/errors** після виправлення UAC0005. Реальний `BuildMacOS` через batch створив `Smoke.app` (72 MB), exit **0**; disabled scene із неіснуючим path виключена з build options.
-- **51/51** temporary behavioral checks: awaited порядок/зупинка/skip/null/concurrent Run, parser/parameters, IO overlap, ZIP hidden files і overwrite, shell quoting, missing executables, stdout/stderr та 128 KiB stderr без deadlock, PATH. **16/16** iOS checks: provisioning XML, перший TeamIdentifier, invalid input, archive/export arguments із пробілами та літеральними shell-символами, fake Xcode failure/missing tool.
-- **10/10** Bash wrapper checks: exact argv із пробілами, optional executable/version, log override, exit propagation; обидва scripts проходять `bash -n` на стандартному macOS Bash.
-- Реальні batch launches: async success → **0**; failed step → **1**, наступний marker не виконується; missing pipeline → **1**; ApplyDefines → compilation/domain reload → наступний step → **0**, before/after виконані по одному разу.
-- Споживач game-1: **217/217 Prototype1.Core.Tests**, 0 failed/skipped; Android (**50 assemblies**) та iOS (**48**) player scripts compile із `Prototype1.Core`/`Prototype1.Runtime` і без `UniTools.Build`/test assemblies. IDE projects перегенеровані через Unity.
-- Усі **201 original .meta** побайтово ідентичні upstream; package version та assembly GUID незмінні.
+- Host compilation and `dotnet build UniTools.Build.csproj --no-restore` (.NET SDK `10.0.401`): **0 warnings / 0 errors**. The current Unity Console also reports 0/0; the history of transient compiler/Pipeline diagnostics was retained.
+- A minimal host containing only this package, without game/Test Framework dependencies: Standalone Editor compilation reports **0 compiler warnings/errors** after the UAC0005 fix. An actual `BuildMacOS` batch run produced `Smoke.app` (72 MB), with exit **0**; a disabled scene with a nonexistent path was excluded from build options.
+- **51/51** temporary behavioral checks: awaited execution order/stopping/skip/null/concurrent Run, parser/parameters, IO overlap, ZIP hidden files and overwrite, shell quoting, missing executables, stdout/stderr including 128 KiB stderr without deadlock, and PATH. **16/16** iOS checks: provisioning XML, the first TeamIdentifier, invalid input, archive/export arguments containing spaces and literal shell characters, and fake Xcode failure/missing-tool behavior.
+- **10/10** Bash wrapper checks: exact argv with spaces, optional executable/version, log overrides, and exit propagation; both scripts pass `bash -n` with the standard macOS Bash.
+- Actual batch launches: async success → **0**; failed step → **1**, without executing the next marker; missing pipeline → **1**; ApplyDefines → compilation/domain reload → next step → **0**, with before/after each executed once.
+- Consumer game-1: **217/217 Prototype1.Core.Tests**, 0 failed/skipped; Android (**50 assemblies**) and iOS (**48**) player scripts compile with `Prototype1.Core`/`Prototype1.Runtime` and without `UniTools.Build`/test assemblies. IDE projects were regenerated through Unity.
+- All **201 original .meta** files are byte-identical to upstream; the package version and assembly GUID are unchanged.
 
-Windows/PowerShell, Linux та старі Unity Editors не запускалися. iOS CLI checks використовували локальний fake executable: signing credentials, App Store upload та device QA не виконувалися. Build artifact мінімального host і compile player scripts споживача не є mobile release гри. Temporary fixtures/outputs не входять до package.
+Windows/PowerShell, Linux, and older Unity Editors were not run. iOS CLI checks used a local fake executable: no signing credentials, App Store uploads, or device QA were involved. The minimal host's build artifact and the consumer's player-script compilation do not constitute a mobile release of the game. Temporary fixtures/outputs are not part of the package.
 
-Виправлення збережено окремим review commit поверх upstream master; Git state споживача фіксує його через gitlink. Інтеграційний дозвіл 12.10.2026 не дозволяє майбутні Git-операції.
+Fixes were saved in a separate review commit on top of upstream master; the consumer's Git state pins it through a gitlink. The integration permission granted on 2026-10-12 does not authorize future Git operations.

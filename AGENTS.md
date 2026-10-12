@@ -1,58 +1,58 @@
-# Інструкції для ШІ — UniTools Build
+# Instructions for AI agents — UniTools Build
 
-Цей файл самодостатній для роботи з пакетом. Додаткові правила репозиторію-споживача діють, коли пакет підключено до нього. Перед змінами прочитайте [README.md](README.md), [package.json](package.json) і `Editor/UniTools.Build.asmdef`.
+This file is self-contained for work on the package. Additional rules from a consumer repository apply when the package is installed there. Before making changes, read [README.md](README.md), [package.json](package.json), and `Editor/UniTools.Build.asmdef`. Write package documentation, including README.md and AGENTS.md, in English.
 
-## Призначення та сумісність
+## Purpose and compatibility
 
-- UPM ID `com.unitools.build`, версія `0.1.10-preview`, assembly і namespace `UniTools.Build`. Assembly містить лише Editor-код; не додавайте її до runtime/player assemblies.
-- Пакет — послідовний pipeline із `BuildStep` ScriptableObjects, параметрами, платформними build-кроками, IO та CLI. Він не є gameplay-системою і не залежить від VContainer, Commands, BehaviorTree чи конкретної гри.
-- `package.json` зберігає upstream minimum Unity `2019.1`; перевірена версія після рев'ю — `6000.6.3f1`. Зберігайте version guards для новіших API. Компіляція Unity 6 не доводить сумісність старих Editors.
-- Немає зовнішніх UPM-залежностей. Потрібні стандартні Editor/IMGUI/UIElements та .NET API. iOS-код із `UnityEditor.iOS.Xcode` компілюється лише за `UNITY_IOS` і потребує встановленого iOS module та активного iOS target. CLI має macOS/Linux shell і Windows cmd; перевірка на macOS не доводить роботу Windows/Linux.
-- Реальні builds потребують відповідного Unity module. Archive/Export потребують macOS, Xcode, сертифікатів і provisioning profiles; інсталяція пакету не встановлює їх і не дозволяє публікацію.
+- UPM ID `com.unitools.build`, version `0.1.10-preview`, assembly and namespace `UniTools.Build`. The assembly contains Editor code only; do not reference it from runtime/player assemblies.
+- The package provides a sequential pipeline of `BuildStep` ScriptableObjects, parameters, platform build steps, IO, and CLI tools. It is independent of gameplay, VContainer, Commands, BehaviorTree, and any particular game.
+- `package.json` retains the upstream minimum Unity version of `2019.1`; the version verified after this review is `6000.6.3f1`. Preserve version guards for newer APIs. Compilation in Unity 6 does not establish compatibility with older Editors.
+- There are no external UPM dependencies. Standard Editor/IMGUI/UIElements and .NET APIs are required. iOS code using `UnityEditor.iOS.Xcode` compiles only under `UNITY_IOS` and requires the installed iOS module and an active iOS target. The CLI supports a macOS/Linux shell and Windows cmd; verification on macOS does not establish Windows/Linux compatibility.
+- Actual builds require the corresponding Unity module. Archive/Export require macOS, Xcode, certificates, and provisioning profiles; installing the package neither installs these prerequisites nor authorizes publication.
 
-## Навігація
+## Navigation
 
-| Шлях | Власник функції |
+| Path | Responsibility |
 |---|---|
-| `Editor/Core/Pipelines/` | `BuildPipeline`, послідовність і Project Settings UI |
-| `Editor/Core/Steps/` | `BuildStep.Execute(): Task`, `UnityBuildStep`, build options |
-| `Editor/Core/Parameters/` | string/int assets, CLI overrides та Inspectors |
-| `Editor/BatchMode/` | аргументи, `BatchModeBuilder.Execute`, вихід CI та resume після reload |
-| `Editor/Platforms/` | Android, iOS, Standalone, WebGL |
-| `Editor/IO/` | шляхи, копіювання, видалення, ZIP |
-| `Editor/Defines/`, `Editor/Versioning/` | зміни ProjectSettings та версії |
-| `Editor/CliTools/`, `Editor/UnityEnvironment/` | процеси, discovery через PATH, shell quoting |
-| `BuildScripts/Unity-Hub/` | Bash/PowerShell/bat wrappers, запускаються з кореня Unity-проєкту |
+| `Editor/Core/Pipelines/` | `BuildPipeline`, execution order, and Project Settings UI |
+| `Editor/Core/Steps/` | `BuildStep.Execute(): Task`, `UnityBuildStep`, and build options |
+| `Editor/Core/Parameters/` | String/int assets, CLI overrides, and Inspectors |
+| `Editor/BatchMode/` | Arguments, `BatchModeBuilder.Execute`, CI exit codes, and resuming after reload |
+| `Editor/Platforms/` | Android, iOS, Standalone, and WebGL |
+| `Editor/IO/` | Paths, copying, deletion, and ZIP |
+| `Editor/Defines/`, `Editor/Versioning/` | ProjectSettings and version changes |
+| `Editor/CliTools/`, `Editor/UnityEnvironment/` | Processes, PATH discovery, and shell quoting |
+| `BuildScripts/Unity-Hub/` | Bash/PowerShell/bat wrappers, run from the Unity project root |
 
-## Контракти
+## Contracts
 
-- Зберігайте public API, assembly identity, назви serialized fields, enum values та кожен наявний `.meta` GUID. Переміщуйте файл разом із його `.meta`; новому Unity-файлу потрібен новий унікальний GUID. Версію пакету не змінюйте без узгодженої версійної задачі.
-- Нова операція — окремий `BuildStep`, конфігурація — serialized fields або параметр-asset. Custom step повертає `Task`, який завершується лише після всієї роботи. Помилки й ненульові exit codes мають перервати pipeline; не приховуйте їх логом або успішним Task.
-- `BuildPipeline.Run` призначений для Editor; `RunStep` — також для batch runner. Порожній pipeline, null step, неправильний індекс — помилки конфігурації. `Skip` — явне рішення автора; воно логуються без warning. Кроки виконуються послідовно; один asset не можна запускати повторно, поки працює `Run`.
-- Не використовуйте blocking `.Wait()` / `.GetAwaiter().GetResult()` на незавершеному Task у Unity main thread. `async void` дозволений лише для Unity menu/UI callbacks із catch; API операції повертає Task. Batch runner читає Task результат тільки після `IsCompleted`.
-- Batch runner сам викликає `EditorApplication.Exit(0/1)`. **Не додавайте `-quit`** до цього executeMethod. Pipeline визначається asset path або унікальним exact name; дублікати імен відхиляються. Аргументи читаються через OS-tokenized argv; string parser лишається для public API параметрів.
-- Прогрес batch зберігається в `SessionState`: asset GUID та наступний індекс. Після синхронного define-changing step runner чекає compilation/reload і продовжує наступним кроком. Custom async step не повинен сам запускати domain reload посеред незавершеного Task; розділіть такі дії на окремі кроки. Це resume в межах процесу Editor, а не після crash/restart.
-- Немає автоматичного скасування чи rollback виконаних кроків. Editor pipeline, що змінює defines із domain reload, запускайте batch-способом. Не обіцяйте паралельне виконання Unity builds або відновлення ProjectSettings після pipeline.
-- Build options включають лише enabled scenes. Успіх Unity build — лише `BuildResult.Succeeded`; Failed, Cancelled, Unknown або exception переривають pipeline.
-- `CommandLine.Execute` приймає навмисну shell-команду, а не масив argv. Літеральні шляхи/значення обгортайте `CommandLine.QuoteArgument`; raw extra arguments є довіреною конфігурацією автора. stdout і stderr читаються одночасно, process звільняється. Сам CLI API синхронний і не має timeout/cancellation — довгі custom CLI steps повинні явно визначити власну політику.
-- `IsInstalled` означає існування файлу за абсолютним шляхом; це не доказ працездатності, виконуваності чи наявності ліцензії. Discovery бере перший наявний executable із окремого output line. PATH доповнюється через `Path.PathSeparator`, без substring-порівняння.
-- IO paths перевіряйте **до** видалення призначення. Джерело й призначення копії не можуть збігатися або бути вкладеними одне в одне. ZIP створюється .NET API поза деревом джерела, включає hidden files, замінює попередній archive. Валідація шляхів лексична; автор відповідає за symlink aliases та дозволені build-output directories.
-- Signing/defines/version/platform steps навмисно змінюють ProjectSettings. Не запускайте на споживачі неперевірений pipeline. Паролі не логувати, не записувати в документацію/fixtures; для CI постачайте їх через авторизовані локальні або secret inputs.
-- Version steps працюють із `System.Version` (2–4 невід’ємні числові компоненти), не з повним SemVer/prerelease. Increment не скидає інші компоненти; missing build/revision нормалізується в 0 перед increment; overflow — помилка.
-- Не приховуйте compiler warnings широким `#pragma warning disable`. Вузький CS0414 біля iOS serialized fields пояснюється тим, що Inspector зберігає їх на інших targets.
+- Preserve public APIs, assembly identity, serialized field names, enum values, and every existing `.meta` GUID. Move a file together with its `.meta`; a new Unity file requires a new unique GUID. Do not change the package version without an agreed versioning task.
+- Implement each new operation as a separate `BuildStep`; use serialized fields or a parameter asset for configuration. A custom step returns a `Task` that completes only when all its work is finished. Errors and nonzero exit codes must stop the pipeline; do not hide them with a log message or a successful Task.
+- `BuildPipeline.Run` is intended for the Editor; `RunStep` also serves the batch runner. An empty pipeline, a null step, or an invalid index is a configuration error. `Skip` is an explicit authoring choice and is logged without a warning. Steps run sequentially; do not start the same asset again while `Run` is active.
+- Do not call blocking `.Wait()` / `.GetAwaiter().GetResult()` on an unfinished Task on the Unity main thread. Use `async void` only for Unity menu/UI callbacks with exception handling; operation APIs return Task. The batch runner reads a Task result only after `IsCompleted`.
+- The batch runner calls `EditorApplication.Exit(0/1)` itself. **Do not add `-quit`** to this executeMethod. Identify a pipeline by its asset path or a unique exact name; duplicate names are rejected. Arguments are read from OS-tokenized argv; the string parser remains part of the public parameter API.
+- Batch progress is stored in `SessionState`: the asset GUID and the next index. After a synchronous step that changes defines, the runner waits for compilation/reload and continues with the next step. A custom async step must not trigger a domain reload while its Task is unfinished; split such operations into separate steps. Resuming works within the Editor process, not after a crash/restart.
+- There is no automatic cancellation or rollback of completed steps. Run pipelines that change defines and trigger domain reload through batch mode. Do not promise parallel Unity builds or restoration of ProjectSettings after a pipeline.
+- Build options include enabled scenes only. Only `BuildResult.Succeeded` is a successful Unity build; Failed, Cancelled, Unknown, or an exception stops the pipeline.
+- `CommandLine.Execute` accepts an intentional shell command, not an argv array. Wrap literal paths/values with `CommandLine.QuoteArgument`; raw extra arguments are trusted author configuration. Read stdout and stderr concurrently and dispose the process. The CLI API is synchronous and has no timeout/cancellation; long custom CLI steps must define their own policy explicitly.
+- `IsInstalled` means that a file exists at an absolute path; it does not establish usability, executability, or license availability. Discovery selects the first existing executable from a separate output line. Append PATH entries using `Path.PathSeparator`, without substring comparisons.
+- Validate IO paths **before** deleting a destination. Copy source and destination must not coincide or contain one another. Create ZIP archives through the .NET API outside the source tree, include hidden files, and replace the previous archive. Path validation is lexical; the author is responsible for symlink aliases and permitted build-output directories.
+- Signing/defines/version/platform steps intentionally change ProjectSettings. Do not run an unverified pipeline in a consumer project. Never log passwords or put them in documentation/fixtures; supply them to CI through authorized local or secret inputs.
+- Version steps use `System.Version` (2–4 nonnegative numeric components), not full SemVer/prerelease syntax. Increment does not reset other components; a missing build/revision is normalized to 0 before incrementing; overflow is an error.
+- Do not hide compiler warnings with a broad `#pragma warning disable`. The narrow CS0414 suppression beside iOS serialized fields exists because the Inspector retains them on other targets.
 
-## Перевірки та документація
+## Verification and documentation
 
-1. Скомпілюйте **весь пакет** через Unity Editor і перевірте compiler warnings/errors, зокрема при Android та iOS active targets. Не редагуйте `Library`, `Temp`, generated `.csproj` або compiler output.
-2. Перевірте standalone мінімальний host із локальним UPM entry `"com.unitools.build": "file:<absolute-package-path>"`, без game packages. Пакет не має власного Test Framework чи збереженої test suite; використовуйте тимчасові C# probes/Editor Test Runner споживача, не підміняйте виконання статичним пошуком.
-3. Для змінених контрактів перевірте порядок/await, fail-stop, explicit Skip/null steps, quoted/empty/negative CLI values, великий stderr, ненульовий exit, відсутній tool, paths із пробілами, invalid copy paths і ZIP overwrite/hidden files. Fixtures і output створюйте лише в disposable temporary directory та прибирайте після перевірки.
-4. Реальний batch launch має завершитися з 0 на успіх, 1 на відсутній pipeline/failed step. Перевірте asynchronous delay та define-changing step → reload → наступний крок. Scripts мають передати точні аргументи й exit code; Bash: `bash -n BuildScripts/Unity-Hub/{build,unity}.sh`. PowerShell/Windows перевіряйте на їхньому host.
-5. У споживачі: UPM resolve, compiler, відповідні наявні tests; перевірте, що `UniTools.Build` відсутній у player assemblies. Build artifact, player-script compile і device QA — різні докази.
-6. Результати, версію Editor, фактичні межі та зміну поведінки записуйте в наявному README. Не додавайте окремі review/report файли чи Python verification tools. Не очищайте Console, щоб приховати діагностику.
+1. Compile **the entire package** through the Unity Editor and check compiler warnings/errors, including with Android and iOS active targets. Do not edit `Library`, `Temp`, generated `.csproj` files, or compiler output.
+2. Verify a standalone minimal host with the local UPM entry `"com.unitools.build": "file:<absolute-package-path>"`, without game packages. The package has no Test Framework dependency or checked-in test suite; use temporary C# probes/the consumer's Editor Test Runner, and do not substitute static searches for execution.
+3. For changed contracts, check execution order/awaiting, failure stopping subsequent steps, explicit Skip/null steps, quoted/empty/negative CLI values, large stderr output, nonzero exit codes, missing tools, paths with spaces, invalid copy paths, and ZIP overwrite/hidden files. Create fixtures and output only in a disposable temporary directory and remove them after verification.
+4. An actual batch launch must exit with 0 on success and 1 for a missing pipeline/failed step. Check an asynchronous delay and a step that changes defines → reload → next step. Scripts must preserve exact arguments and exit codes; Bash: `bash -n BuildScripts/Unity-Hub/{build,unity}.sh`. Verify PowerShell/Windows on their own host.
+5. In a consumer project, check UPM resolution, compilation, and relevant existing tests; confirm that `UniTools.Build` is absent from player assemblies. A build artifact, player-script compilation, and device QA are separate forms of evidence.
+6. Record results, the Editor version, actual limitations, and behavior changes in the existing README. Do not add separate review/report files or Python verification tools. Do not clear the Console to hide diagnostics.
 
-## Git та дозволи
+## Git and permissions
 
-- Це окремий upstream Git repository. Git state/index/history/remotes/config, commit/push, LFS і submodule operations потребують явного дозволу користувача на відповідні дії. Дозвіл минулого review не діє на майбутні задачі.
-- Read-only Git запускайте з `GIT_OPTIONAL_LOCKS=0`. Звичайні source edits у межах задачі дозволені.
-- Package commit і host gitlink — окремі дії. Локальні fixes у dirty submodule **не входять** до його pinned commit і не відтворюються на fresh clone. Перед передачею явно повідомте цей стан; не pin-ьте unpublished commit без доступного remote.
-- За дозволеного commit використовуйте English message та `Stanislav Felinskyi <felinskyi.sg@gmail.com>` для author і committer. Перед будь-якою публікацією звірте обидві identities. Review/integration не є дозволом публікувати build, створювати release/tag або писати повідомлення третім особам.
+- This is a separate upstream Git repository. Changes to Git state/index/history/remotes/config, commit/push, LFS, and submodule operations require explicit user permission for the corresponding actions. Permission from a previous review does not apply to future tasks.
+- Run read-only Git commands with `GIT_OPTIONAL_LOCKS=0`. Ordinary source edits within the task scope are permitted.
+- A package commit and the host gitlink are separate actions. Local fixes in a dirty submodule **are not included** in its pinned commit and cannot be reproduced by a fresh clone. Clearly report that state at handoff; do not pin an unpublished commit without an accessible remote.
+- For an authorized commit, use an English message and `Stanislav Felinskyi <felinskyi.sg@gmail.com>` for both author and committer. Verify both identities before publication. Review/integration does not authorize publishing a build, creating a release/tag, or messaging third parties.
