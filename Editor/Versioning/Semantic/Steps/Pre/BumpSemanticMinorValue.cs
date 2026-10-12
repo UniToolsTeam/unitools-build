@@ -13,7 +13,7 @@ namespace UniTools.Build
         public override async Task Execute()
         {
             Version v = Load();
-            Save(v.Major, v.Minor + (int)Increment, v.Build, v.Revision);
+            Save(v.Major, checked(v.Minor + (int)Increment), v.Build, v.Revision);
             await Task.CompletedTask;
         }
     }

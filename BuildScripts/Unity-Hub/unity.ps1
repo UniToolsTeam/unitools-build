@@ -1,37 +1,24 @@
-Write-Output "PowerShell $($PSVersionTable.PSEdition) version $($PSVersionTable.PSVersion)"
-#The default quit timeout is 300 seconds (5 mins). The full build process could take more time, that's why we set this value bigger
-$QuitTimeout=86400
-#Define the project path
-$ProjectPath=$(pwd)
-#Parse UnityVersion from the version file
-$UnityVersion = Get-Content "$ProjectPath/ProjectSettings/ProjectVersion.txt" -Raw
-$UnityVersion = $UnityVersion -split " "
-$UnityVersion = $UnityVersion[1]
-$UnityVersion = $UnityVersion -split "\n"
-$UnityVersion = $UnityVersion[0]
-$UnityVersion = $UnityVersion.Trim()
-#Create a path to the Unity Folder
-$UnityPath="$Env:Programfiles\Unity\Hub\Editor\$UnityVersion\Editor\Unity.exe"
-#Path to log file
-$BuildLog="PipelineResults.log"
-
-
-# Remove previous Editor.log.
-Remove-Item "$BuildLog" -Recurse -ErrorAction Ignore
-# Start the Unity process in background thread.
-Start-Process -FilePath "$UnityPath" -ArgumentList "-quit -quitTimeout $QuitTimeout -batchmode -projectPath $ProjectPath -executeMethod UniTools.Build.BatchModeBuilder.Execute -logFile $BuildLog $args"
-# Wait for Editor.log to be created.
-while (!(Test-Path "$BuildLog")) {
-    Start-Sleep -m 10
+# Generic Windows Editor wrapper. Run from the Unity project root.
+$ErrorActionPreference = 'Stop'
+$unitoolsArguments = @($args)
+$unitoolsEditorPath = $env:UNITOOLS_UNITY_PATH
+if ($unitoolsArguments.Count -gt 0 -and (Test-Path -LiteralPath $unitoolsArguments[0] -PathType Leaf)) {
+    $unitoolsEditorPath = $unitoolsArguments[0]
+    $unitoolsArguments = @($unitoolsArguments | Select-Object -Skip 1)
 }
-# Output Editor.log until Unity is done.
-Get-Content -Path "$BuildLog" -Tail 1 -Wait | Where-Object {
-    Write-Host $_
-
-    if ($_ -match "Application will terminate with return code") {
-        [int]$exitCode = $_.Substring($_.get_Length()-1)
-        Write-Host "Exit code is: "
-        Write-Host $exitCode
-        exit $exitCode
-    }
+if ([string]::IsNullOrWhiteSpace($unitoolsEditorPath)) {
+    $unitoolsVersion = (Select-String -Path 'ProjectSettings/ProjectVersion.txt' -Pattern '^m_EditorVersion: (.+)$').Matches.Groups[1].Value.Trim()
+    $unitoolsEditorPath = Join-Path $env:ProgramFiles "Unity/Hub/Editor/$unitoolsVersion/Editor/Unity.exe"
 }
+if (!(Test-Path -LiteralPath $unitoolsEditorPath -PathType Leaf)) {
+    throw "Unity executable not found: $unitoolsEditorPath"
+}
+function ConvertTo-UnityArgument([string]$value) {
+    # Windows native argv quoting: preserve embedded quotes and trailing backslashes.
+    $value = [regex]::Replace($value, '(\\*)"', '$1$1\"')
+    $value = [regex]::Replace($value, '(\\+)$', '$1$1')
+    return '"' + $value + '"'
+}
+$unitoolsArgumentString = ($unitoolsArguments | ForEach-Object { ConvertTo-UnityArgument ([string]$_) }) -join ' '
+$unitoolsProcess = Start-Process -FilePath $unitoolsEditorPath -ArgumentList $unitoolsArgumentString -Wait -PassThru
+exit $unitoolsProcess.ExitCode

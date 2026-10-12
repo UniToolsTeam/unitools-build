@@ -1,6 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using UnityEditor;
+#if UNITY_2021_2_OR_NEWER
+using UnityEditor.Build;
+#endif
 using UnityEngine;
 
 namespace UniTools.Build
@@ -21,7 +24,11 @@ namespace UniTools.Build
                 throw new Exception("Invalid define symbols added!");
             }
 
+#if UNITY_2021_2_OR_NEWER
+            PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(m_group), m_symbols.ToString());
+#else
             PlayerSettings.SetScriptingDefineSymbolsForGroup(m_group, m_symbols.ToString());
+#endif
 
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();

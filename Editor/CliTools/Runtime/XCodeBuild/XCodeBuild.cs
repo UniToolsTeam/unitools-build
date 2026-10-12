@@ -48,6 +48,7 @@ namespace UniTools.Build
 
         public override ToolResult Execute(string arguments = null, string workingDirectory = null)
         {
+            if (!IsInstalled) throw new ToolNotInstalledException();
             if (string.IsNullOrEmpty(arguments))
             {
                 arguments = string.Empty;
@@ -58,7 +59,7 @@ namespace UniTools.Build
                 workingDirectory = string.Empty;
             }
 
-            return m_commandLine.Execute($"{Path} {arguments}", workingDirectory);
+            return m_commandLine.Execute($"{CommandLine.QuoteArgument(Path)} {arguments}", workingDirectory);
         }
 
         public override string ToString()

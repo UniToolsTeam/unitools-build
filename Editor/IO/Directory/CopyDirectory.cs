@@ -15,8 +15,13 @@ namespace UniTools.Build
 
         public override async Task Execute()
         {
-            FileUtil.DeleteFileOrDirectory(m_destination.ToString());
-            FileUtil.CopyFileOrDirectory(m_source.ToString(), m_destination.ToString());
+            string source = PathProperty.RequirePath(m_source, "Source directory");
+            string destination = PathProperty.RequirePath(m_destination, "Destination directory");
+            if (!System.IO.Directory.Exists(source)) throw new System.IO.DirectoryNotFoundException(source);
+            PathProperty.ValidateCopyPaths(source, destination);
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(destination));
+            FileUtil.DeleteFileOrDirectory(destination);
+            FileUtil.CopyFileOrDirectory(source, destination);
             await Task.CompletedTask;
         }
     }

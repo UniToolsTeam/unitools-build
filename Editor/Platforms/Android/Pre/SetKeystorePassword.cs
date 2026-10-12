@@ -17,7 +17,7 @@ namespace UniTools.Build
         {
             PlayerSettings.Android.useCustomKeystore = true;
 
-            PlayerSettings.keystorePass = m_password;
+            PlayerSettings.Android.keystorePass = m_password;
 
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();

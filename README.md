@@ -1,219 +1,110 @@
 # UniTools Build
-This packages is a core for the configurable build pipeline using Unity Editor. 
 
-# Features
-- Customizable build pipeline with Pre and Post build steps using Scriptable Objects
-- Asynchronous build steps
-- Composite pipelines to build several targets simultaneously 
-- Run pipelines from the editor and batch mode
-- Use command line interface (CLI) with C# interface on OSX and Windows
-- Add custom CLI tools
+Editor-пакет для послідовної збірки Unity-проєктів через ScriptableObject-кроки. UPM `com.unitools.build` `0.1.10-preview`, namespace/assembly `UniTools.Build`, MIT. Кроки можна виконувати з Editor або batch mode. Інструкції для ШІ — [AGENTS.md](AGENTS.md).
 
+## Інсталяція
 
-# Related packages
-Those packages include functionality to customize your pipeline for different platforms. Check those packages before creating custom build steps, probably, desired functionality already created. :)
-- [UniTools Build AppCenter](https://github.com/UniToolsTeam/unitools-build-appcenter)
-
-# Installation
-
-### Download
-[Latest Releases](../../releases/latest)
-
-### Unity Package Manager (UPM)
-
-> You will need to have git installed and set in your system PATH.
-
-> Check package [dependencies](https://github.com/UniToolsTeam/unitools-build/blob/master/package.json)
-
-Add the following to `Packages/manifest.json` where x.x.x the version (tag) check [Latest Releases](../../releases/latest):
+Звичайний Git UPM entry:
 
 ```json
+"com.unitools.build": "https://github.com/UniToolsTeam/unitools-build.git#master"
+```
+
+Для контрольованої локальної копії додайте SSH-сабмодуль у корені **Unity-проєкту** з дозволом власника Git:
+
+```sh
+git submodule add -b master git@github.com:UniToolsTeam/unitools-build.git Packages/com.unitools.build
+```
+
+Якщо Unity-проєкт — підкаталог іншого repository, prefix шляху додається від кореня repository. UPM entry замінюється на:
+
+```json
+"com.unitools.build": "file:com.unitools.build"
+```
+
+Submodule фіксує конкретний commit; `branch = master` не оновлює його автоматично. Fresh clone потребує дозволеного `git submodule update --init --recursive`. SSH account/host alias налаштовує власник машини, не пакет.
+
+Зовнішніх UPM-залежностей немає. Код лише Editor; iOS Xcode API потребує iOS module та активного iOS target. Upstream minimum у manifest — Unity `2019.1`; поточна перевірка — `6000.6.3f1`, старі версії повторно не перевірені. Для builds потрібні platform modules; для iOS archive/export — macOS, Xcode та signing credentials.
+
+## Pipeline та параметри
+
+Створіть asset через **Create → UniTools → Pipeline**, додайте `BuildStep` assets у `m_steps` у потрібному порядку. **Context Menu → Run** або **Project Settings → UniTools → Build → Run** запускає його. Успішний крок повністю завершує свій Task перед наступним; помилка зупиняє pipeline. Порожні/null кроки — configuration errors, `Skip` — явний пропуск. Один pipeline asset не запускається повторно під час `Run`.
+
+Немає окремих Pre/Post base classes: успадковуйте **`BuildStep`**, додавайте операції до одного впорядкованого списку. Наприклад:
+
+```csharp
+using System.Threading.Tasks;
+using UniTools.Build;
+using UnityEngine;
+
+[CreateAssetMenu(menuName = "Example/Wait")]
+public sealed class WaitBuildStep : BuildStep
 {
-  "dependencies": {
-    "com.unitools.build": "https://github.com/UniToolsTeam/unitools-build.git#x.x.x",
-    "...": "..."
-  }
+    [SerializeField] private int m_milliseconds = 250;
+    public override Task Execute() => Task.Delay(m_milliseconds);
 }
 ```
 
-# Getting Started
-## Build Pipeline
-Build Pipeline is a Scriptable Object that contains a sequence of commands (Build Steps) executed in the strict order. 
-There are several types of steps:
-- Pre Build Steps. Executed before the build phase.
-- Build Steps. Creates a build artifact.
-- Post Build Steps. Executed after the build phase. 
+`UnityBuildStepWithOptions` створює BuildPlayerOptions з enabled scenes та serialized output/development/clean-cache settings. Готові steps: APK/AAB, macOS/Windows, iOS Xcode, WebGL; archive/export/upload; signing; defines; numeric version increment; paths/copy/delete/ZIP. Тільки `BuildResult.Succeeded` є успіхом. Pipeline не виконує автоматичний rollback: signing/version/defines та platform settings залишаються зміненими.
 
-To create a build pipeline call **UniTools/Build/Pipeline** from the **Create Asset** menu.
-<img width="759" alt="image" src="https://user-images.githubusercontent.com/3504465/122220053-a86dbb00-ceb8-11eb-9f2c-85442573aaa8.png">
+`StringBuildParameter`, `IntBuildParameter`, `ScriptingDefineSymbols` можна перевизначити в batch. Ключ — назва asset без пробілів, lowercase invariant, із `--`; наприклад `Release Notes` → `--releasenotes`. Значення з пробілами обгортайте лапками. Підтримано `--key=value`, empty string і від’ємні числа; malformed integer — помилка. Ключі параметрів мають бути унікальними й не конфліктувати з `--pipeline` або Unity arguments.
 
-To Run a pipeline from the Unity Editor call **Run** command from the **Context Menu**.
-<img width="562" alt="image" src="https://user-images.githubusercontent.com/3504465/122220682-3cd81d80-ceb9-11eb-9f07-2a453c82b1b6.png">
+Version steps використовують `System.Version`, 2–4 числові компоненти, без SemVer suffixes; increment зберігає інші компоненти.
 
-To see all pipelines in the current project go to the ProjectSettings/UniTools/Build tab.
-<img width="712" alt="image" src="https://user-images.githubusercontent.com/3504465/122220999-89bbf400-ceb9-11eb-90e9-b25d6a77e41e.png">
+## Batch mode
 
-## Build Steps
-Before create a custom build step make sure that this is not exist at [Related Packages](#related-packages). 
-To create a custom build step ScriptablePostBuildStep or ScriptablePreBuildStep base class should be used. Example:
+Із кореня Unity-проєкту:
 
-```csharp
-[CreateAssetMenu(
-fileName = nameof(WaitPostBuildStep),
-menuName = nameof(UniTools) + "/Build/Steps" + "/Post/Wait"
-)]
-public sealed class WaitPostBuildStep : ScriptablePostBuildStep
-{
-    [SerializeField] private int m_seconds = 1;
-
-    public override async Task Execute(string pathToBuiltProject)
-    {
-        Stopwatch stopwatch = Stopwatch.StartNew();
-        
-        Debug.Log($"{nameof(WaitPostBuildStep)}: started ");
-        
-        await Task.Delay(TimeSpan.FromSeconds(m_seconds));
-        
-        stopwatch.Stop();
-        Debug.Log($"{nameof(WaitPostBuildStep)}: completed {stopwatch.Elapsed.TotalSeconds}");
-
-    }
-}
-```
-With CreateAssetMenu attribute the build step can be created as a Scriptable Object in Unity Editor and added to the Build Pipeline.
-
-# CLI
-The C# interface to work with CLI from Unity3D Editor. To check all available tools open the CLI tab in the Project Settings.
-
-<img width="341" alt="image" src="https://user-images.githubusercontent.com/3504465/149134318-8d366d7e-4a7f-4358-bb42-61dc3d4e01e0.png">
-
-## Unity Enviroment
-CLI Tools package is working with Unity Environment. It is using the PATH variable to identify Tools paths. You can check your Unity Environment with "Tools/CLI/UnityEnvironment"
-
-<img width="349" alt="image" src="https://user-images.githubusercontent.com/3504465/149128605-479aaba2-d7fc-429a-81e1-793b0360d29c.png">
-
-Sometimes the tool can't be found due to a missing PATH in the Unity Environment.
-<img width="436" alt="image" src="https://user-images.githubusercontent.com/3504465/149134823-29a80a53-b131-417c-b6d2-20b2f8edacba.png">
-
-To change the PATH value in the Unity Environment you can use [PathVariable](https://github.com/UniToolsTeam/unitools-cli/blob/master/Runtime/UnityEnvironment/PathVariableAttribute.cs) attribute. Simply add this attribute with the desired path to any C# class. For example:
-
-```csharp
-[assembly: PathVariable("/usr/local/bin")]
+```sh
+/path/to/Unity -batchmode -projectPath "$PWD" \
+  -executeMethod UniTools.Build.BatchModeBuilder.Execute \
+  --pipeline "Assets/Build/Release Pipeline.asset" -logFile -
 ```
 
-## Using the existing tool
-All tools available in the code via a Cli class. For example:
-```csharp
-var terminal = Cli.Tool<OsxTerminal>();
-var result = terminal.Execute("echo Hello world!");
-Debug.Log(result);
+Можна передати унікальне exact asset name замість path. Дублікати імен відхиляються. Runner завершує Editor з **exit 0** лише після всіх Tasks, із **exit 1** при помилці. **Не передавайте `-quit`** цьому entry point: його asynchronous completion потребує власного lifetime. Загальні правила `-executeMethod`, `-batchmode` та завершення Editor описані в [Unity CLI reference](https://docs.unity3d.com/6000.0/Documentation/Manual/EditorCommandLineArguments.html).
 
+Runner зберігає GUID pipeline та наступний крок у SessionState; після синхронного `ApplyDefines` чекає compilation/domain reload і продовжує. Custom async step не повинен сам перезавантажувати assemblies до завершення Task. Editor Run для pipeline, який змінює defines, замініть batch-запуском. Recovery після crash/restart та cancellation не реалізовані; timeout у CI має задавати зовнішній runner.
+
+Wrappers у `BuildScripts/Unity-Hub/` можна запускати без копіювання, але working directory має бути коренем Unity-проєкту:
+
+```sh
+bash Packages/com.unitools.build/BuildScripts/Unity-Hub/build.sh \
+  "/path with spaces/to/Unity" --pipeline "Release Pipeline"
 ```
 
-## Custom tools
-Custom tools allow creating any custom methods together with Execute inside the tool class for more convenient usage in the code. Before creating a custom tool, please check existing [packages](https://github.com/UniToolsTeam), probably, the tool was already created. :)
-### Create a custom tool
-To create a custom tool you need to inherit [BaseCliTool](https://github.com/UniToolsTeam/unitools-cli/blob/master/Runtime/CliTools/Base/Tools/BaseCliTool.cs) class and create a tool attribute that also must be inherited from the [BaseCliToolAttribute](https://github.com/UniToolsTeam/unitools-cli/blob/master/Runtime/CliTools/Base/Attributes/BaseCliToolAttribute.cs).
-For example:
+`build.sh` визначає installed Hub Editor через ProjectVersion.txt; optional first argument або `UNITOOLS_UNITY_PATH` задає executable. `unity.sh` — generic wrapper, optional first argument — executable або Unity version; решта аргументів передаються без змін. PowerShell `build.ps1`/`unity.ps1` і `build.bat` використовують Windows Hub path чи `UNITOOLS_UNITY_PATH`, чекають завершення process і повертають його exit code. PowerShell build пише `PipelineResults.log`.
+
+## CLI
+
+**Project Settings → UniTools → CLI** показує зареєстровані tools; **Tools → CLI → UnityEnvironment** — environment, успадкований Editor. `[assembly: PathVariable("/your/tool/directory")]` доповнює PATH process, зі стандартним separator. Не додавайте machine paths до reusable package.
+
 ```csharp
-public sealed class AppCenterAttribute : BaseCliToolAttribute
-{
-    public AppCenterAttribute() : base(AppCenter.ToolName)
-    {
-    }
-
-    public override BaseCliTool Create()
-    {
-        return new AppCenter(
-           PathResolver.Default.Execute(AppCenter.ToolName).Output.Split(Environment.NewLine.ToCharArray())?[0],
-           CommandLine.Default);
-    }
-}
-
-[assembly: AppCenter]
-public sealed class AppCenter : BaseCliTool
-    , ICliToolVersion
-    , ICliToolFriendlyName
-    , ICliToolHelpLink
-{
-    public const string ToolName = "appcenter";
-
-    private readonly CommandLine m_commandLine = default;
-    private string m_version = string.Empty;
-
-    public AppCenter(string path, CommandLine commandLine)
-    {
-        Path = path;
-        m_commandLine = commandLine;
-    }
-
-    public string Name => nameof(AppCenter);
-    public string Link => "https://docs.microsoft.com/en-us/appcenter/cli/";
-
-    public string Version
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(m_version))
-            {
-                m_version = Execute("--version").Output;
-            }
-
-            return m_version;
-        }
-    }
-
-    public override string Path { get; } = default;
-
-    public override ToolResult Execute(string arguments = null, string workingDirectory = null)
-    {
-        if (!IsInstalled)
-        {
-            throw new ToolNotInstalledException();
-        }
-        
-        if (string.IsNullOrEmpty(arguments))
-        {
-            arguments = string.Empty;
-        }
-
-        if (string.IsNullOrEmpty(workingDirectory))
-        {
-            workingDirectory = string.Empty;
-        }
-
-        return m_commandLine.Execute($"{Path} {arguments}", workingDirectory);
-    }
-
-    public override string ToString()
-    {
-        return $"{nameof(AppCenter)}: {Path}, {Version}";
-    }
-}
-
-```
-### Using a custom tool
-Using the custom tool is the same as any existing tool.
-```csharp
-var myTool = Cli.Tool<MyCustomTool>();
-var result = terminal.Execute("-a test");
-Debug.Log(result);
-
+ToolResult result = CommandLine.Default.Execute("echo Hello");
+if (result.ExitCode != 0) throw new BuildStepFailedException(result.Error);
 ```
 
-## Generic tools
-Sometimes it is enough to have only an Execute method for the tool. In this case, all that is needed is to add [CliToolAttribute](https://github.com/UniToolsTeam/unitools-cli/blob/master/Runtime/CliTools/GenericTool/CliToolAttribute.cs) to the assembly with a tool executable name.
-For example:
-```csharp
-//create a tool
-[assembly: CliTool("aws")]
+`CommandLine.Execute` виконує shell-команду синхронно. stdout/stderr читаються одночасно; довга команда все одно блокує caller, timeout/cancellation не вбудовані. Літеральне значення/шлях обгортайте `CommandLine.QuoteArgument(value)`. Raw command strings та `Archive.m_extraArgs` мають бути довіреною конфігурацією. Windows cmd має власні правила expansions; QuoteArgument не робить довільний shell input безпечним.
 
-//use a tool
-void Foo()
-{
-    var aws = Cli.Tool("aws");
-    var result = aws.Execute("s3 ls --profile myprofile");
-    Debug.Log(result);
-}
+`Cli.Tool<T>()` повертає перший зареєстрований tool цього типу або null; `Cli.Tool(name)` потребує exact registered executable key. Готові tools — shell, path resolver, Tar, Zip, XCodeBuild (реєструється лише на iOS target). `IsInstalled` перевіряє існування файлу, не його успішний запуск.
 
-```
+Custom tool: успадкуйте `BaseCliTool`, створіть `BaseCliToolAttribute` із `Create()` та додайте assembly attribute. Generic tool: `[assembly: CliTool("executable")]` або `[assembly: CliToolPath("executable", "/absolute/path")]`. Shell paths із пробілами підтримані. Перевіряйте `ToolResult.ExitCode` у кожному build step.
+
+IO копії перевіряють джерело до видалення призначення й відхиляють overlap. ZIP step використовує .NET, включає hidden files і створює archive поза джерелом. `m_archiveFileName` може бути абсолютним або відносним до source folder, наприклад `../output.zip`. Output усередині source відхиляється; попередній ZIP замінюється, а не доповнюється stale entries. Symlink aliases потребують авторської перевірки.
+
+## Рев'ю та перевірки — 12.10.2026
+
+Рев'ю від upstream `master`, commit `0e8f482178de0c3b2a8c8ff0c6631d0631cc3417`: виправлено async callbacks/CI exit та reload continuation, parsing/quoting, process pipe deadlock/disposal, PATH, build result/disabled scenes, null конфігурацію, copy overlap, ZIP, iOS plist parsing та obsolete Unity APIs. Public type/assembly identities, version і original GUIDs збережені. Застарілі README приклади Pre/Post classes замінені actual API.
+
+Перевірено Unity `6000.6.3f1` на macOS:
+
+- Host compile та `dotnet build UniTools.Build.csproj --no-restore` (.NET SDK `10.0.401`) — **0 warnings / 0 errors**. У поточному Unity Console також 0/0; історія transient compiler/Pipeline diagnostics збережена.
+- Мінімальний host лише з цим пакетом, без game/Test Framework dependencies: Standalone Editor compile — **0 compiler warnings/errors** після виправлення UAC0005. Реальний `BuildMacOS` через batch створив `Smoke.app` (72 MB), exit **0**; disabled scene із неіснуючим path виключена з build options.
+- **51/51** temporary behavioral checks: awaited порядок/зупинка/skip/null/concurrent Run, parser/parameters, IO overlap, ZIP hidden files і overwrite, shell quoting, missing executables, stdout/stderr та 128 KiB stderr без deadlock, PATH. **16/16** iOS checks: provisioning XML, перший TeamIdentifier, invalid input, archive/export arguments із пробілами та літеральними shell-символами, fake Xcode failure/missing tool.
+- **10/10** Bash wrapper checks: exact argv із пробілами, optional executable/version, log override, exit propagation; обидва scripts проходять `bash -n` на стандартному macOS Bash.
+- Реальні batch launches: async success → **0**; failed step → **1**, наступний marker не виконується; missing pipeline → **1**; ApplyDefines → compilation/domain reload → наступний step → **0**, before/after виконані по одному разу.
+- Споживач game-1: **217/217 Prototype1.Core.Tests**, 0 failed/skipped; Android (**50 assemblies**) та iOS (**48**) player scripts compile із `Prototype1.Core`/`Prototype1.Runtime` і без `UniTools.Build`/test assemblies. IDE projects перегенеровані через Unity.
+- Усі **201 original .meta** побайтово ідентичні upstream; package version та assembly GUID незмінні.
+
+Windows/PowerShell, Linux та старі Unity Editors не запускалися. iOS CLI checks використовували локальний fake executable: signing credentials, App Store upload та device QA не виконувалися. Build artifact мінімального host і compile player scripts споживача не є mobile release гри. Temporary fixtures/outputs не входять до package.
+
+Виправлення збережено окремим review commit поверх upstream master; Git state споживача фіксує його через gitlink. Інтеграційний дозвіл 12.10.2026 не дозволяє майбутні Git-операції.

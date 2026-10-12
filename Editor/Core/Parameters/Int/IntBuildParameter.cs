@@ -3,7 +3,7 @@ using UnityEngine;
 namespace UniTools.Build
 {
     [CreateAssetMenu(
-        fileName = nameof(StringBuildParameter),
+        fileName = nameof(IntBuildParameter),
         menuName = MenuPaths.Parameters + "Int"
     )]
     public sealed class IntBuildParameter : ScriptableBuildParameter<int>
@@ -16,6 +16,7 @@ namespace UniTools.Build
                 {
                     return true;
                 }
+                throw new System.FormatException($"Invalid integer for {CliKey}: {obj}");
             }
 
             v = int.MinValue;

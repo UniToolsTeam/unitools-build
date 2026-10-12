@@ -10,7 +10,7 @@ namespace UniTools.Build
             {
                 try
                 {
-                    return System.IO.Path.IsPathRooted(Path);
+                    return System.IO.Path.IsPathRooted(Path) && System.IO.File.Exists(Path);
                 }
                 catch
                 {

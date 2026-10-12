@@ -16,8 +16,9 @@ namespace UniTools.Build
 
         public override async Task Execute()
         {
+            if (m_result == null) throw new System.InvalidOperationException("Random path result asset is not assigned.");
             m_result.Value = Path.Combine(
-                m_initial.ToString(),
+                PathProperty.RequirePath(m_initial, "Initial directory"),
                 Guid.NewGuid().ToString());
 
             await Task.CompletedTask;

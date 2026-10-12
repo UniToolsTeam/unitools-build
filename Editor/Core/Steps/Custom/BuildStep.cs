@@ -13,7 +13,7 @@ namespace UniTools.Build
         public abstract Task Execute();
 
         [ContextMenu("Run")]
-        private void Run()
+        private async void Run()
         {
             if (EditorUtility.DisplayDialog($"Run {name} separately?", "This option must be used for the debug only. Running steps outside of the pipeline can cause unexpected behavior.", "Yes", "No"))
             {
@@ -21,7 +21,7 @@ namespace UniTools.Build
 
                 try
                 {
-                    Execute().GetAwaiter().GetResult();
+                    await Execute();
                 }
                 catch (Exception e)
                 {

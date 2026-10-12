@@ -35,7 +35,7 @@ namespace UniTools.Build
 #if UNITY_2021_1_OR_NEWER
             if (EditorGUILayout.LinkButton("How to change PATH in UnityEnvironment?"))
             {
-                Application.OpenURL("https://github.com/UniToolsTeam/unitools-cli#unity-enviroment");
+                Application.OpenURL("https://github.com/UniToolsTeam/unitools-build#cli");
             }
 #endif
         }

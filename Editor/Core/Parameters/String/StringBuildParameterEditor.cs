@@ -39,7 +39,7 @@ namespace UniTools.Build
                 int index = target.Options.IndexOf(value.stringValue);
                 index = EditorGUILayout.Popup(index, target.Options.Select(o => o.ToString()).ToArray());
 
-                if (index >= 0 && index <= target.Options.Count)
+                if (index >= 0 && index < target.Options.Count)
                 {
                     value.stringValue = target.Options[index];
                 }

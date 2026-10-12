@@ -23,6 +23,7 @@ namespace UniTools.Build
 
             foreach (PathProperty path in m_paths)
             {
+                if (path == null) throw new System.InvalidOperationException("A composite path part is not assigned.");
                 p = Path.Combine(p, path.ToString());
             }
 

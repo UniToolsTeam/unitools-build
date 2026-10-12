@@ -1,2 +1,3 @@
 @echo off
-echo TODO CallPSHere
+powershell.exe -NoProfile -File "%~dp0build.ps1" %*
+exit /b %errorlevel%

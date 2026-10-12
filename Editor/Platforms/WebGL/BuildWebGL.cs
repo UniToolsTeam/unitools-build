@@ -76,9 +76,9 @@ namespace UniTools.Build
             await Task.CompletedTask;
 
             BuildSummary summary = report.summary;
-            if (summary.result == BuildResult.Failed)
+            if (summary.result != BuildResult.Succeeded)
             {
-                throw new Exception($"{nameof(BuildPipeline)}: {name} Build failed!");
+                throw new Exception($"{nameof(BuildPipeline)}: {name} build ended with {summary.result} ({summary.totalErrors} errors).");
             }
         }
     }

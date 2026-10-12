@@ -39,10 +39,8 @@ namespace UniTools.Build
 
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
-            for (int i = 0; i < variables.Count(); i++)
-            {
-                m_presenters[i].Draw(variables.ElementAt(i));
-            }          
+            var presenter = new UnityEnvironmentVariableEditorPresenter();
+            foreach (UnityEnvironmentVariableModel variable in variables) presenter.Draw(variable);
 
             EditorGUILayout.EndScrollView();
         }

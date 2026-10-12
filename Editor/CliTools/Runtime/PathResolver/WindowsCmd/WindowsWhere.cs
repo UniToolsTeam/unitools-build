@@ -4,7 +4,7 @@ namespace UniTools.Build
         , ICliToolFriendlyName
     {
         public string Name => nameof(WindowsWhere);
-        public override string Path => @"C:\Windows\System32\where.exe";
+        public override string Path => System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.System), "where.exe");
 
         public override ToolResult Execute(string arguments = null, string workingDirectory = null)
         {

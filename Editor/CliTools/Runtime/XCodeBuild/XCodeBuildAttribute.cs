@@ -11,7 +11,7 @@ namespace UniTools.Build
         public override BaseCliTool Create()
         {
             return new XCodeBuild(
-                PathResolver.Default.Execute(XCodeBuild.ToolName).Output.Replace(Environment.NewLine, string.Empty),
+                PathResolver.ResolveExecutable(XCodeBuild.ToolName),
                 CommandLine.Default);
         }
     }

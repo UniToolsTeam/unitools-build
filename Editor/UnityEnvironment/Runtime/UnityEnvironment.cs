@@ -38,26 +38,19 @@ namespace UniTools.Build
 
         public static UnityEnvironmentVariableModel Get(string name)
         {
-            return Variables.FirstOrDefault(v => v.Name.Equals(name));
+            return Variables.FirstOrDefault(v => v.Name.Equals(name, System.IO.Path.PathSeparator == ';' ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
         }
 
         private static void ModifyPath(string newValue)
         {
+            if (string.IsNullOrWhiteSpace(newValue)) return;
             const string pathName = "PATH";
-
-            string path = Environment.GetEnvironmentVariable(pathName);
-            if (path.Contains(newValue))
-            {
-                return;
-            }
-
-#if UNITY_EDITOR_OSX
-            Environment.SetEnvironmentVariable(pathName, $"{path}:{newValue}"); 
-#elif UNITY_EDITOR_WIN
-            Environment.SetEnvironmentVariable(pathName, $"{path}{newValue}");
-#endif
+            string path = Environment.GetEnvironmentVariable(pathName) ?? string.Empty;
+            char separator = System.IO.Path.PathSeparator;
+            StringComparison comparison = separator == ';' ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+            if (path.Split(separator).Any(entry => string.Equals(entry, newValue, comparison))) return;
+            Environment.SetEnvironmentVariable(pathName, string.IsNullOrEmpty(path) ? newValue : path + separator + newValue);
             m_variables = null;
-
         }
     }
 }

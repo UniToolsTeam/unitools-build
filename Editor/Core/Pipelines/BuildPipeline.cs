@@ -23,7 +23,9 @@ namespace UniTools.Build
 
         [SerializeField] private PipelineStep[] m_steps = default;
 
-        public int Count => m_steps.Length;
+        private bool m_running;
+
+        public int Count => m_steps?.Length ?? 0;
 
         private void OnValidate()
         {
@@ -57,16 +59,14 @@ namespace UniTools.Build
                 EditorUtility.ClearProgressBar();
                 if (m_steps[index] == null || m_steps[index].Step == null)
                 {
-                    Debug.LogWarning($"{nameof(BuildPipeline)}: The step at index {index} is null!");
-
-                    return;
+                    throw new BuildStepFailedException($"{nameof(BuildPipeline)}: The step at index {index} is not assigned!");
                 }
 
                 EditorUtility.DisplayProgressBar($"Execute {m_steps[index].Step.name} ({index + 1}/{m_steps.Length})...", $"{m_steps[index].Step.name} ", index / (float)Count);
 
                 if (m_steps[index].Skip)
                 {
-                    Debug.LogWarning($"{nameof(BuildPipeline)}: The {m_steps[index].Step.name} was skipped!");
+                    Debug.Log($"{nameof(BuildPipeline)}: The {m_steps[index].Step.name} was skipped.");
 
                     return;
                 }
@@ -80,7 +80,6 @@ namespace UniTools.Build
             }
         }
 
-        [ContextMenu("Run")]
         public async Task Run()
         {
             if (Application.isBatchMode)
@@ -88,13 +87,17 @@ namespace UniTools.Build
                 throw new Exception($"{nameof(BuildPipeline)}: can not be run from the BatchMode!");
             }
 
-            if (m_steps == null || m_steps.Length == 0)
+            if (m_running)
             {
-                Debug.Log($"{nameof(BuildPipeline)}: no any post build steps");
-
-                return;
+                throw new InvalidOperationException($"{nameof(BuildPipeline)}: {name} is already running.");
             }
 
+            if (Count == 0)
+            {
+                throw new BuildStepFailedException($"{nameof(BuildPipeline)}: {name} has no steps.");
+            }
+
+            m_running = true;
             try
             {
                 for (int i = 0; i < Count; i++)
@@ -102,12 +105,18 @@ namespace UniTools.Build
                     await RunStep(i);
                 }
             }
-            catch (Exception e)
+            finally
             {
-                Debug.LogException(e);
-
-                throw e;
+                m_running = false;
             }
+        }
+
+        // Unity context menus require a void callback; callers of Run still receive its Task.
+        [ContextMenu("Run")]
+        private async void RunFromMenu()
+        {
+            try { await Run(); }
+            catch (Exception exception) { Debug.LogException(exception); }
         }
     }
 }

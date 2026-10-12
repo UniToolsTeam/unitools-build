@@ -15,7 +15,7 @@ namespace UniTools.Build
 
         public override async Task Execute()
         {
-            DirectoryInfo di = new DirectoryInfo(m_path.ToString());
+            DirectoryInfo di = new DirectoryInfo(PathProperty.RequirePath(m_path, "Directory path"));
 
             if (!di.Exists)
             {
@@ -37,7 +37,7 @@ namespace UniTools.Build
 
         public override string ToString()
         {
-            return m_path.ToString();
+            return m_path?.ToString() ?? string.Empty;
         }
     }
 }

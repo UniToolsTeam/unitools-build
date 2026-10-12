@@ -1,41 +1,27 @@
 #!/usr/bin/env bash
-#This script is usefull to run Unity CLI commands
-
-#Read a Unity Version as a first arg (can be empty) in this case the version will be defined from the Project settings.
-UNITY_VERSION="$1"
-#Build Unity Path according to the OS
-if [[ "$OSTYPE" == "darwin"* ]]
-then
-    echo "The platform is OSX"
-    #Path to the Unity Editor executable
-    UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity"
-else
-    echo "This is Windows. Should be Windows :)"
-    UNITY_PATH="C:/Program Files/Unity/Hub/Editor/$UNITY_VERSION/Editor/Unity.exe"
+# Generic Unity wrapper. Optional first argument: an Editor executable or Unity version.
+set -euo pipefail
+unitools_editor_path="${UNITOOLS_UNITY_PATH:-}"
+unitools_version=''
+if [[ $# -gt 0 && -f "$1" ]]; then
+    unitools_editor_path="$1"
+    shift
+elif [[ $# -gt 0 && "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+[abfp][0-9]+$ ]]; then
+    unitools_version="$1"
+    shift
 fi
-#Checking if the Unity Path
-echo "Checking if Unity is available at path $UNITY_PATH"
-if [ -f "$UNITY_PATH" ]
-then
-    echo "The Unity Editor is found at Path $UNITY_PATH"
-else
-    echo "Unity is not found. Going to generate it based on the project version"
-    #This is a current project directory.
-    PROJECT_PATH=$(pwd)
-    #Parse the Unity version from the ProjectVersion.txt file
-    UNITY_VERSION=$(awk '{ print $2 ; exit}' "$PROJECT_PATH/ProjectSettings/ProjectVersion.txt")
-    if [[ "$OSTYPE" == "darwin"* ]]
-    then
-        echo "The platform is OSX"
-        #Path to the Unity Editor executable
-        UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity"
-    else
-        echo "This is Windows. Should be Windows :)"
-        UNITY_PATH="C:/Program Files/Unity/Hub/Editor/$UNITY_VERSION/Editor/Unity.exe"
+if [[ -z "$unitools_editor_path" ]]; then
+    if [[ -z "$unitools_version" ]]; then
+        unitools_version=$(awk '/^m_EditorVersion:/{print $2; exit}' ProjectSettings/ProjectVersion.txt)
     fi
+    case "$OSTYPE" in
+        darwin*) unitools_editor_path="/Applications/Unity/Hub/Editor/$unitools_version/Unity.app/Contents/MacOS/Unity" ;;
+        msys*|cygwin*) unitools_editor_path="C:/Program Files/Unity/Hub/Editor/$unitools_version/Editor/Unity.exe" ;;
+        *) echo 'Set UNITOOLS_UNITY_PATH to the Editor executable on this platform.' >&2; exit 1 ;;
+    esac
 fi
-
-echo "Unity path is $UNITY_PATH"
-
-#Execute the command
-"$UNITY_PATH" "$@"
+if [[ ! -f "$unitools_editor_path" ]]; then
+    echo "Unity executable not found: $unitools_editor_path" >&2
+    exit 1
+fi
+exec "$unitools_editor_path" "$@"

@@ -10,7 +10,7 @@ namespace UniTools.Build
 
         public override BaseCliTool Create()
         {
-            string path = PathResolver.Default.Execute(Executable).Output.Replace(Environment.NewLine, string.Empty);
+            string path = PathResolver.ResolveExecutable(Executable);
 
             return new GenericTool(Executable, path, CommandLine.Default);
         }

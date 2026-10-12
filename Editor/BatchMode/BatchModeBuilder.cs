@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -7,73 +8,101 @@ namespace UniTools.Build
 {
     public static class BatchModeBuilder
     {
-        public static async void Execute()
+        private const string m_guidKey = "UniTools.Build.Batch.Guid";
+        private const string m_indexKey = "UniTools.Build.Batch.NextStep";
+        private static Task m_stepTask;
+        private static int m_waitUpdates;
+
+        // executeMethod returns immediately; the update runner owns completion and the exit code.
+        public static void Execute()
         {
             if (!Application.isBatchMode)
+                throw new InvalidOperationException("BatchModeBuilder requires -batchmode.");
+            try
             {
-                throw new Exception($"{nameof(BatchModeBuilder)}: can be run only from the BatchMode!");
+                string[] arguments = Environment.GetCommandLineArgs();
+                if (arguments.Contains("-quit"))
+                    throw new ArgumentException("Do not pass -quit: BatchModeBuilder exits after all asynchronous steps finish.");
+                if (!CommandLineParser.TryToParseValue(arguments, "--pipeline", out object value)
+                    || string.IsNullOrWhiteSpace(value.ToString()))
+                    throw new ArgumentException("Specify --pipeline followed by a pipeline asset name or path.");
+                BuildPipeline pipeline = Find(value.ToString());
+                if (pipeline.Count == 0) throw new BuildStepFailedException("The pipeline has no steps.");
+                SessionState.SetString(m_guidKey, AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(pipeline)));
+                SessionState.SetInt(m_indexKey, 0);
+                Resume();
             }
-
-            const string key = "--pipeline";
-            string pipeline = string.Empty;
-
-            if (!CommandLineParser.TryToParseValue(Environment.CommandLine, key, out object v))
-            {
-                throw new Exception($"The pipeline is not assigned from the CommandLine. Use {key} to define a pipeline for execution.");
-            }
-
-            pipeline = v.ToString();
-
-            if (Find(pipeline) != null)
-            {
-                await RunBuildPipeline(pipeline);
-            }
-            else
-            {
-                throw new Exception($"Failed to find a pipeline with name {pipeline}!");
-            }
+            catch (Exception exception) { Finish(exception); }
         }
 
-        private static BuildPipeline Find(string pipelineName)
+        [InitializeOnLoadMethod]
+        private static void Resume()
         {
-            string[] guids = AssetDatabase.FindAssets($"t:{nameof(BuildPipeline)}");
+            if (!Application.isBatchMode || string.IsNullOrEmpty(SessionState.GetString(m_guidKey, ""))) return;
+            m_stepTask = null;
+            m_waitUpdates = 2;
+            EditorApplication.update -= Tick;
+            EditorApplication.update += Tick;
+        }
 
-            foreach (string guid in guids)
+        private static BuildPipeline Find(string nameOrPath)
+        {
+            BuildPipeline byPath = AssetDatabase.LoadAssetAtPath<BuildPipeline>(nameOrPath);
+            if (byPath != null) return byPath;
+            BuildPipeline found = null;
+            foreach (string guid in AssetDatabase.FindAssets("t:BuildPipeline"))
             {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
+                BuildPipeline pipeline = AssetDatabase.LoadAssetAtPath<BuildPipeline>(AssetDatabase.GUIDToAssetPath(guid));
+                if (pipeline == null || !string.Equals(pipeline.name, nameOrPath, StringComparison.Ordinal)) continue;
+                if (found != null) throw new ArgumentException("Duplicate pipeline names; use the asset path instead.");
+                found = pipeline;
+            }
+            return found != null ? found : throw new ArgumentException("Pipeline not found: " + nameOrPath);
+        }
+
+        private static void Tick()
+        {
+            try
+            {
+                if (m_stepTask != null)
+                {
+                    if (!m_stepTask.IsCompleted) return;
+                    CompleteStep();
+                }
+                // Persist progress before a define-changing step triggers compilation/domain reload.
+                if (EditorApplication.isCompiling || EditorApplication.isUpdating) return;
+                if (m_waitUpdates-- > 0) return;
+                if (EditorUtility.scriptCompilationFailed)
+                    throw new BuildStepFailedException("Compilation failed during the pipeline.");
+                string path = AssetDatabase.GUIDToAssetPath(SessionState.GetString(m_guidKey, ""));
                 BuildPipeline pipeline = AssetDatabase.LoadAssetAtPath<BuildPipeline>(path);
-                if (pipeline == null)
-                {
-                    continue;
-                }
-
-                if (pipeline.name.Equals(pipelineName))
-                {
-                    return pipeline;
-                }
+                if (pipeline == null) throw new BuildStepFailedException("The running pipeline asset was removed.");
+                int index = SessionState.GetInt(m_indexKey, 0);
+                if (index >= pipeline.Count) { Finish(null); return; }
+                m_stepTask = pipeline.RunStep(index);
+                if (m_stepTask.IsCompleted) CompleteStep();
             }
-
-            return null;
+            catch (Exception exception) { Finish(exception); }
         }
 
-        private static async Task RunBuildPipeline(string name)
+        private static void CompleteStep()
         {
-            BuildPipeline pipeline = Find(name);
-            if (pipeline == null)
-            {
-                throw new Exception($"Failed to find a pipeline with name {name}!");
-            }
+            m_stepTask.GetAwaiter().GetResult();
+            m_stepTask = null;
+            SessionState.SetInt(m_indexKey, SessionState.GetInt(m_indexKey, 0) + 1);
+            m_waitUpdates = 2;
+        }
 
-            int stepsCount = pipeline.Count;
-            for (int i = 0; i < stepsCount; i++)
-            {
-                await pipeline.RunStep(i);
-                pipeline = Find(name);
-                if (pipeline == null)
-                {
-                    throw new Exception($"Failed to find a pipeline with name {name}!");
-                }
-            }
+        private static void Finish(Exception exception)
+        {
+            EditorApplication.update -= Tick;
+            SessionState.EraseString(m_guidKey);
+            SessionState.EraseInt(m_indexKey);
+            m_stepTask = null;
+            EditorUtility.ClearProgressBar();
+            if (exception != null) Debug.LogException(exception);
+            else Debug.Log("UniTools Build pipeline completed.");
+            EditorApplication.Exit(exception == null ? 0 : 1);
         }
     }
 }

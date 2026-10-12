@@ -24,7 +24,6 @@ namespace UniTools.Build
 
             PlayerSettings.Android.keyaliasName = m_alias;
             PlayerSettings.Android.keyaliasPass = m_password;
-            PlayerSettings.keyaliasPass = m_password;
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
 

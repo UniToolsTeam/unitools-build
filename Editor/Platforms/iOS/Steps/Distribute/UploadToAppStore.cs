@@ -26,15 +26,17 @@ namespace UniTools.Build
             exportOptions.root.SetString("method", "app-store");
             exportOptions.root.SetString("destination", "upload");
 
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(ExportOptionsPath)));
             File.WriteAllText(ExportOptionsPath, exportOptions.WriteToString());
 
             XCodeBuild build = Cli.Tool<XCodeBuild>();
+            if (build == null || !build.IsInstalled) throw new ToolNotInstalledException();
 
             string command =
                 $"-exportArchive " +
-                $" -archivePath {ArchivePath}" +
-                $" -exportOptionsPlist {ExportOptionsPath}" +
-                $" -exportPath {OutputPath}";
+                $" -archivePath {CommandLine.QuoteArgument(ArchivePath)}" +
+                $" -exportOptionsPlist {CommandLine.QuoteArgument(ExportOptionsPath)}" +
+                $" -exportPath {CommandLine.QuoteArgument(OutputPath)}";
 
             ToolResult result = build.Execute(command, ProjectPath.Value);
             if (result.ExitCode != 0)
@@ -42,7 +44,7 @@ namespace UniTools.Build
                 throw new BuildStepFailedException($"{nameof(Archive)}: Failed! {result.ToString()}");
             }
 #else
-            throw new Exception($"{nameof(ExportIpa)}: unsupported platform!");
+            throw new Exception($"{nameof(UploadToAppStore)}: unsupported platform!");
 #endif
         }
     }

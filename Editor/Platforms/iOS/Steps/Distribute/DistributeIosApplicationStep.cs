@@ -10,10 +10,10 @@ namespace UniTools.Build
     public abstract class DistributeIosApplicationStep : BuildStep
     {
         [SerializeField, Tooltip("Can be found at Apple Developer Console")] private string m_teamId = string.Empty;
-#pragma warning disable
-        //Pragma used to avoid miss values on another platform. Can't not be closed #if UNITY_IOS
+#pragma warning disable CS0414
+        // Keep the saved Inspector field on non-iOS targets; only iOS code consumes it.
         [SerializeField] private string m_provisioningProfileName = default;
-#pragma warning restore
+#pragma warning restore CS0414
         [SerializeField] private string m_bundleIdentifier = default;
         [SerializeField] private bool m_uploadBitcode = false;
         [SerializeField] private bool m_uploadSymbols = false;
@@ -25,11 +25,10 @@ namespace UniTools.Build
         {
             get
             {
+#if UNITY_IOS
                 const string fileName = "ExportOptions.plist";
-
                 return Path.Combine(m_pathToXCodeProject.ToString(), fileName);
-
-#if !UNITY_IOS
+#else
                 throw new Exception($"{nameof(DistributeIosApplicationStep)}: unsupported platform for {m_bundleIdentifier}, {m_uploadBitcode}, {m_uploadSymbols}");
 #endif
             }

@@ -23,15 +23,16 @@ namespace UniTools.Build
             await Task.CompletedTask;
 
             XCodeBuild build = Cli.Tool<XCodeBuild>();
+            if (build == null || !build.IsInstalled) throw new ToolNotInstalledException();
             string command =
                 " archive" +
-                $" -{CommandStart} {m_projectPath}" +
-                $" -scheme \"{m_scheme}\"" +
-                $" -archivePath {m_outputPath}";
+                $" -{CommandStart} {CommandLine.QuoteArgument(PathProperty.RequirePath(m_projectPath, "Xcode project"))}" +
+                $" -scheme {CommandLine.QuoteArgument(m_scheme)}" +
+                $" -archivePath {CommandLine.QuoteArgument(PathProperty.RequirePath(m_outputPath, "Archive output"))}";
 
             if (!string.IsNullOrWhiteSpace(m_destination))
             {
-                command += $" -destination \"{m_destination}\"";
+                command += $" -destination {CommandLine.QuoteArgument(m_destination)}";
             }
 
             if (!string.IsNullOrWhiteSpace(m_extraArgs))
@@ -39,11 +40,11 @@ namespace UniTools.Build
                 command += $" {m_extraArgs} ";
             }
 
-            command += $" DEVELOPMENT_TEAM={m_teamId}";
+            command += $" {CommandLine.QuoteArgument("DEVELOPMENT_TEAM=" + m_teamId)}";
 
             if (m_overrideProvisioningProfile)
             {
-                command += $" PROVISIONING_PROFILE={m_provisioningProfileUuid}";
+                command += $" {CommandLine.QuoteArgument("PROVISIONING_PROFILE=" + m_provisioningProfileUuid)}";
             }
 
             if (m_enableBitcode)

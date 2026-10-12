@@ -14,14 +14,14 @@ namespace UniTools.Build
 
         public override async Task Execute()
         {
-            Directory.CreateDirectory(m_path.ToString());
+            Directory.CreateDirectory(PathProperty.RequirePath(m_path, "Directory path"));
 
             await Task.CompletedTask;
         }
 
         public override string ToString()
         {
-            return m_path.ToString();
+            return m_path?.ToString() ?? string.Empty;
         }
     }
 }

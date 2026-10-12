@@ -51,7 +51,7 @@ namespace UniTools.Build
                 workingDirectory = string.Empty;
             }
 
-            return m_commandLine.Execute($"{Path} {arguments}", workingDirectory);
+            return m_commandLine.Execute($"{CommandLine.QuoteArgument(Path)} {arguments}", workingDirectory);
         }
     }
 }

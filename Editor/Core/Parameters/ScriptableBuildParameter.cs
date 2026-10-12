@@ -9,7 +9,7 @@ namespace UniTools.Build
         /// <summary>
         /// The name of the parameter that can be used inside a command line
         /// </summary>
-        public string CliKey => $"--{name.Replace(" ", string.Empty).ToLower()}";
+        public string CliKey => $"--{name.Replace(" ", string.Empty).ToLowerInvariant()}";
 
         /// <summary>
         /// The command for the CLI with a current value
@@ -44,7 +44,7 @@ namespace UniTools.Build
             }
         }
 
-        public override string CliCommand => $"{CliKey} {Value.ToString()}";
+        public override string CliCommand => $"{CliKey} {CommandLine.QuoteArgument(System.Convert.ToString(Value, System.Globalization.CultureInfo.InvariantCulture) ?? string.Empty)}";
 
         protected abstract bool TryParseFromCommandLine(string commandLine, out TValue v);
     }

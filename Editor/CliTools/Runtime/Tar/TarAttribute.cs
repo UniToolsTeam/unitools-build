@@ -13,7 +13,7 @@ namespace UniTools.Build
         public override BaseCliTool Create()
         {
             return new Tar(
-                PathResolver.Default.Execute(ToolName).Output.Split(Environment.NewLine.ToCharArray())?[0],
+                PathResolver.ResolveExecutable(ToolName),
                 CommandLine.Default);
         }
     }

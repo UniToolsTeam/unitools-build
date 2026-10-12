@@ -16,8 +16,10 @@ namespace UniTools.Build
             get
             {
                 BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
-                buildPlayerOptions.scenes = EditorBuildSettings.scenes.Select(s => s.path).ToArray();
-                buildPlayerOptions.locationPathName = m_path.ToString();
+                buildPlayerOptions.scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
+                buildPlayerOptions.locationPathName = PathProperty.RequirePath(m_path, "Build output");
+                if (buildPlayerOptions.scenes.Length == 0)
+                    throw new BuildStepFailedException("No enabled build scenes are configured.");
                 buildPlayerOptions.target = Target;
                 buildPlayerOptions.targetGroup = UnityEditor.BuildPipeline.GetBuildTargetGroup(Target);
 

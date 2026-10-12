@@ -24,7 +24,8 @@ namespace UniTools.Build
             {
                 if (model is ICliToolVersion version)
                 {
-                    m_version = version.Version;
+                    try { m_version = version.Version; }
+                    catch (System.Exception exception) { m_version = "Unavailable: " + exception.Message; }
                 }
             }
 

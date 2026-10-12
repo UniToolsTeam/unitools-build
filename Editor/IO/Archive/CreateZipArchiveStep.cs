@@ -1,48 +1,38 @@
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace UniTools.Build
 {
-    [CreateAssetMenu(
-        fileName = nameof(CreateZipArchiveStep),
-        menuName = MenuPaths.IO + "Zip Archive"
-    )]
+    [CreateAssetMenu(fileName = nameof(CreateZipArchiveStep), menuName = MenuPaths.IO + "Zip Archive")]
     public sealed class CreateZipArchiveStep : BuildStep
     {
-        [SerializeField, Tooltip("The location of the folder that needs to be compressed.")] private PathProperty m_directory = default;
-        [SerializeField, Tooltip("The name of the created archive (include extensions. Ex: my.zip).")] private PathProperty m_archiveFileName = default;
+        [SerializeField, Tooltip("The folder to compress.")] private PathProperty m_directory = default;
+        [SerializeField, Tooltip("Output ZIP path, relative to the source folder or absolute; keep it outside the source.")]
+        private PathProperty m_archiveFileName = default;
 
-        public override async Task Execute()
+        public override Task Execute()
         {
-            if (string.IsNullOrWhiteSpace(m_archiveFileName.ToString()))
+            string source = PathProperty.RequirePath(m_directory, "Archive source");
+            string archiveName = m_archiveFileName?.ToString();
+            if (string.IsNullOrWhiteSpace(archiveName) || !string.Equals(Path.GetExtension(archiveName), ".zip", StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("An archive path with a .zip extension is required.");
+            if (!Directory.Exists(source)) throw new DirectoryNotFoundException(source);
+            string destination = Path.GetFullPath(Path.Combine(source, archiveName));
+            // A ZIP inside its own input can recursively include itself or an earlier artifact.
+            PathProperty.ValidateCopyPaths(source, destination);
+            Directory.CreateDirectory(Path.GetDirectoryName(destination));
+            string temporary = destination + ".tmp-" + Guid.NewGuid();
+            try
             {
-                throw new Exception($"{nameof(CreateZipArchiveStep)}: file name is null or empty!");
+                ZipFile.CreateFromDirectory(source, temporary, System.IO.Compression.CompressionLevel.Optimal, false);
+                if (File.Exists(destination)) File.Delete(destination);
+                File.Move(temporary, destination);
             }
-
-            string ext = Path.GetExtension(m_archiveFileName.ToString());
-            if (!ext.Equals(".zip"))
-            {
-                throw new Exception($"{nameof(CreateZipArchiveStep)}: invalid file name {m_archiveFileName}!");
-            }
-
-            if (!Directory.Exists(m_directory.ToString()))
-            {
-                throw new Exception($"{nameof(CreateZipArchiveStep)}: failed due to directory {m_directory} doesn't exist!");
-            }
-
-            Zip zip = Cli.Tool<Zip>();
-            if (zip == null || !zip.IsInstalled)
-            {
-                throw new ToolNotInstalledException();
-            }
-
-            string command = $"-r {m_archiveFileName} *";
-            ToolResult result = zip.Execute(command, m_directory.ToString());
-            Debug.Log(result);
-
-            await Task.CompletedTask;
+            finally { if (File.Exists(temporary)) File.Delete(temporary); }
+            return Task.CompletedTask;
         }
     }
 }

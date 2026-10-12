@@ -28,8 +28,8 @@ namespace UniTools.Build
 
             if (m_foldout)
             {
-                string sh = $"./build.sh --pipeline {m_buildPipeline.name} {command}";
-                string ps = $".\\build.ps1 --pipeline {m_buildPipeline.name} {command}";
+                string sh = $"./build.sh --pipeline \"{m_buildPipeline.name}\" {command}";
+                string ps = $".\\build.ps1 --pipeline \"{m_buildPipeline.name}\" {command}";
                 bool copySh = false;
                 bool copyPs = false;
 
@@ -85,7 +85,7 @@ namespace UniTools.Build
             {
                 if (EditorUtility.DisplayDialog($"Run {m_buildPipeline.name} pipeline?", "", "Yes", "No"))
                 {
-                    m_buildPipeline.Run().GetAwaiter().OnCompleted(() => { Debug.Log($"Pipeline {m_buildPipeline} is completed!"); });
+                    RunPipeline();
                 }
             }
 
@@ -93,6 +93,16 @@ namespace UniTools.Build
             {
                 EditorGUIUtility.PingObject(m_buildPipeline);
             }
+        }
+
+        private async void RunPipeline()
+        {
+            try
+            {
+                await m_buildPipeline.Run();
+                Debug.Log($"Pipeline {m_buildPipeline.name} completed.");
+            }
+            catch (System.Exception exception) { Debug.LogException(exception); }
         }
     }
 }

@@ -1,4 +1,7 @@
 using UnityEditor;
+#if UNITY_2021_2_OR_NEWER
+using UnityEditor.Build;
+#endif
 using UnityEngine;
 
 namespace UniTools.Build
@@ -58,7 +61,11 @@ namespace UniTools.Build
 
             if (apply)
             {
+#if UNITY_2021_2_OR_NEWER
+                PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(m_group), m_target.ToString());
+#else
                 PlayerSettings.SetScriptingDefineSymbolsForGroup(m_group, m_target.ToString());
+#endif
 
                 AssetDatabase.Refresh();
                 AssetDatabase.SaveAssets();

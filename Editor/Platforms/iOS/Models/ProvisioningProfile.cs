@@ -1,3 +1,4 @@
+using System;
 #if UNITY_IOS
 using System.Xml;
 using System.IO;
@@ -9,64 +10,39 @@ namespace UniTools.Build
     public sealed class ProvisioningProfile
     {
         public static readonly ProvisioningProfile Empty = new ProvisioningProfile
-        {
-            Uuid = string.Empty,
-            Name = string.Empty,
-            TeamIdentifier = string.Empty
-        };
-
+        { Uuid = string.Empty, Name = string.Empty, TeamIdentifier = string.Empty };
         public string Uuid { get; private set; }
-
         public string Name { get; private set; }
         public string TeamIdentifier { get; private set; }
-
-        private ProvisioningProfile()
-        {
-        }
+        private ProvisioningProfile() { }
 
         public static ProvisioningProfile Load(string pathToFile)
         {
-            if (string.IsNullOrWhiteSpace(pathToFile))
-            {
-                return Empty;
-            }
-
+            if (string.IsNullOrWhiteSpace(pathToFile)) return Empty;
 #if UNITY_IOS
-            const string patternPlist = "<plist(.*)<\\/plist>";
-
-            ProvisioningProfile profile = new ProvisioningProfile();
             string input = File.ReadAllText(pathToFile);
-
-            Match match = Regex.Match(input, patternPlist, RegexOptions.Singleline);
-
-            string xml = match.ToString();
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(xml);
-
-            foreach (XmlNode parentNode in xmlDoc.DocumentElement)
+            Match match = Regex.Match(input, "<plist[\\s\\S]*?</plist>");
+            if (!match.Success) throw new FormatException("No plist was found in the provisioning profile.");
+            var document = new XmlDocument { XmlResolver = null };
+            document.LoadXml(match.Value);
+            XmlNode dictionary = document.SelectSingleNode("/plist/dict");
+            if (dictionary == null) throw new FormatException("The provisioning profile has no dictionary.");
+            var profile = new ProvisioningProfile();
+            foreach (XmlNode key in dictionary.ChildNodes)
             {
-                for (int i = 0; i < parentNode.ChildNodes.Count; i++)
-                {
-                    if (parentNode.ChildNodes[i].InnerText == "UUID")
-                    {
-                        profile.Uuid = parentNode.ChildNodes[i + 1].InnerText;
-                    }
-
-                    if (parentNode.ChildNodes[i].InnerText == "Name")
-                    {
-                        profile.Name = parentNode.ChildNodes[i + 1].InnerText;
-                    }
-
-                    if (parentNode.ChildNodes[i].InnerText == "TeamIdentifier")
-                    {
-                        profile.TeamIdentifier = parentNode.ChildNodes[i + 1].InnerText;
-                    }
-                }
+                if (key.Name != "key") continue;
+                XmlNode value = key.NextSibling;
+                if (value == null) throw new FormatException("Missing provisioning profile value for " + key.InnerText);
+                if (key.InnerText == "UUID") profile.Uuid = value.InnerText;
+                if (key.InnerText == "Name") profile.Name = value.InnerText;
+                if (key.InnerText == "TeamIdentifier") profile.TeamIdentifier = value.SelectSingleNode("string")?.InnerText;
             }
-
+            if (string.IsNullOrWhiteSpace(profile.Uuid) || string.IsNullOrWhiteSpace(profile.Name)
+                || string.IsNullOrWhiteSpace(profile.TeamIdentifier))
+                throw new FormatException("The provisioning profile is missing UUID, Name or TeamIdentifier.");
             return profile;
 #else
-            throw new System.Exception($"{nameof(ProvisioningProfile)}: unsupported platform.");
+            throw new PlatformNotSupportedException("Provisioning profiles require the active iOS target and iOS module.");
 #endif
         }
     }

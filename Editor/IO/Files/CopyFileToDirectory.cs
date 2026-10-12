@@ -17,10 +17,14 @@ namespace UniTools.Build
 
         public override async Task Execute()
         {
-            string fileName = Path.GetFileName(m_filePath.ToString());
-            string dest = Path.Combine(m_destination.ToString(), fileName);
+            string source = PathProperty.RequirePath(m_filePath, "Source file");
+            string directory = PathProperty.RequirePath(m_destination, "Destination directory");
+            if (!File.Exists(source)) throw new FileNotFoundException("Copy source does not exist.", source);
+            string dest = Path.Combine(directory, Path.GetFileName(source));
+            PathProperty.ValidateCopyPaths(source, dest);
+            Directory.CreateDirectory(directory);
             FileUtil.DeleteFileOrDirectory(dest);
-            FileUtil.CopyFileOrDirectory(m_filePath.ToString(), dest);
+            FileUtil.CopyFileOrDirectory(source, dest);
             await Task.CompletedTask;
         }
     }

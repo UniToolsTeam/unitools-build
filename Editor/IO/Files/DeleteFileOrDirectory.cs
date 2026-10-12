@@ -15,7 +15,7 @@ namespace UniTools.Build
 
         public override async Task Execute()
         {
-            FileUtil.DeleteFileOrDirectory(m_path.ToString());
+            FileUtil.DeleteFileOrDirectory(PathProperty.RequirePath(m_path, "Delete path"));
             await Task.CompletedTask;
         }
     }
