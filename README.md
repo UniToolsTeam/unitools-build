@@ -1,110 +1,417 @@
 # UniTools Build
 
-An Editor package for building Unity projects sequentially through ScriptableObject steps. UPM `com.unitools.build` `0.1.10-preview`, namespace/assembly `UniTools.Build`, MIT license. Steps run in the Editor or batch mode. AI agent instructions are in [AGENTS.md](AGENTS.md).
+Build Unity projects with reusable ScriptableObject steps. Put preparation, player builds, and packaging into one ordered pipeline, then run it from the Editor or a command line.
+
+The package includes Android, iOS, macOS, Windows, and WebGL build steps; path and file operations; version and define helpers; and C# wrappers for external command-line tools. Each step finishes before the next starts, and a failed step stops the pipeline.
 
 ## Installation
 
-Standard Git UPM entry:
+### Unity Package Manager
+
+Add this dependency to `Packages/manifest.json` to use the `unity6-build-review` branch:
 
 ```json
-"com.unitools.build": "https://github.com/UniToolsTeam/unitools-build.git#master"
+{
+  "dependencies": {
+    "com.unitools.build": "https://github.com/UniToolsTeam/unitools-build.git#unity6-build-review"
+  }
+}
 ```
 
-For a managed local copy, add an SSH submodule from the **Unity project root**, with permission from the Git repository owner:
+Add the entry to your existing dependencies rather than replacing the whole manifest. Git must be available on your machine for Unity to resolve the package.
+
+### SSH submodule
+
+From the repository root, add the package at the Unity project's `Packages/com.unitools.build` path. For a repository whose root is also the Unity project root:
 
 ```sh
-git submodule add -b master git@github.com:UniToolsTeam/unitools-build.git Packages/com.unitools.build
+git submodule add -b unity6-build-review \
+  git@github.com:UniToolsTeam/unitools-build.git \
+  Packages/com.unitools.build
 ```
 
-If the Unity project is a subdirectory of another repository, prefix the path relative to that repository's root. Replace the UPM entry with:
+Then use a local UPM dependency:
 
 ```json
-"com.unitools.build": "file:com.unitools.build"
+{
+  "dependencies": {
+    "com.unitools.build": "file:com.unitools.build"
+  }
+}
 ```
 
-The submodule pins a specific commit; `branch = master` does not update it automatically. A fresh clone requires an authorized `git submodule update --init --recursive`. The machine owner configures the SSH account/host alias; the package does not.
+For a Unity project inside a larger repository, prefix the submodule path, for example `apps/unity3d/Packages/com.unitools.build`. After cloning a repository that uses submodules, initialize them with `git submodule update --init --recursive`. The parent repository pins a specific package commit; tracking a branch does not update that commit automatically.
 
-There are no external UPM dependencies. All code is Editor-only; the iOS Xcode API requires the iOS module and an active iOS target. The upstream minimum in the manifest is Unity `2019.1`; the version currently verified is `6000.6.3f1`, and older versions have not been reverified. Builds require platform modules; iOS archive/export requires macOS, Xcode, and signing credentials.
+### Requirements
 
-## Pipelines and parameters
+The package is Editor-only and has no external UPM dependencies. Its manifest declares Unity `2019.1` as the minimum; this branch has been used with Unity `6000.6.3f1`. Install the Unity platform module for the builds you want to create. iOS Xcode-related steps require the iOS module and an active iOS target; archiving and exporting an IPA also require macOS, Xcode, and signing credentials.
 
-Create an asset through **Create → UniTools → Pipeline**, then add `BuildStep` assets to `m_steps` in the required order. Run it through **Context Menu → Run** or **Project Settings → UniTools → Build → Run**. Each successful step completes its entire Task before the next step starts; an error stops the pipeline. Empty/null steps are configuration errors; `Skip` is an explicit omission. Do not start the same pipeline asset again while `Run` is active.
+## Create and run a pipeline
 
-There are no separate Pre/Post base classes: derive from **`BuildStep`** and add operations to a single ordered list. For example:
+1. Create a folder for your build configuration, such as `Assets/Build`.
+2. Choose **Create → UniTools → Pipeline** and name the asset, for example `Android Development`.
+3. Create the step assets you need under **Create → UniTools → Steps**.
+4. Add them to the pipeline's **Steps** list in execution order and configure each step in its Inspector.
+5. Run the pipeline from its Inspector menu or **Project Settings → UniTools → Build**.
+
+<img width="759" alt="The original Unity Create menu with the Pipeline asset option selected" src="https://user-images.githubusercontent.com/3504465/122220053-a86dbb00-ceb8-11eb-9f2c-85442573aaa8.png">
+
+*Create a pipeline asset from the Project window. This original screenshot shows the older menu layout; the current path is **Create → UniTools → Pipeline**.*
+
+<img width="562" alt="The Run command in a build pipeline's Inspector menu" src="https://user-images.githubusercontent.com/3504465/122220682-3cd81d80-ceb9-11eb-9f07-2a453c82b1b6.png">
+
+*Open the pipeline's Inspector menu and choose **Run** to execute it. The original Inspector separates Pre Build, Build, and Post Build; the current version uses one ordered **Steps** list for all three stages.*
+
+<img width="712" alt="The UniTools Build page in Unity Project Settings listing configured pipelines" src="https://user-images.githubusercontent.com/3504465/122220999-89bbf400-ceb9-11eb-90e9-b25d6a77e41e.png">
+
+*Use **Project Settings → UniTools → Build** to find and run the project's pipelines. Expand a pipeline in the current UI to select its asset and copy command-line examples.*
+
+A pipeline waits for each step's `Task` before continuing. Use **Skip** to omit a configured step temporarily. An empty pipeline or an unassigned step is a configuration error. Build steps use enabled scenes only; enable your starting scene and any additional scenes the player needs in the project's build scene list.
+
+### Example: development APK and ZIP
+
+Create a pipeline named `Android Development` with these steps:
+
+| Order | Step | Inspector configuration |
+|---|---|---|
+| 1 | `EnsureDirectoryExists` | Path: `Builds/Android` |
+| 2 | `SetDebugKeystore` | Use Android's debug signing for local testing |
+| 3 | `BuildApk` | Path: `Builds/Android/Game.apk`; Development Build: enabled |
+| 4 | `CreateZipArchiveStep` | Directory: `Builds/Android`; Archive File Name: `../Game-Android.zip` |
+
+Run the pipeline to produce `Builds/Android/Game.apk` and `Builds/Game-Android.zip`. The ZIP path is relative to its source directory, so `../Game-Android.zip` places the archive outside that directory. Running the ZIP step again replaces the previous archive, including removal of stale entries.
+
+For an Android App Bundle, replace `BuildApk` with `BuildAab` and use an output path ending in `.aab`. Release signing requires your own keystore configuration.
+
+### Available steps
+
+| Task | Steps |
+|---|---|
+| Build a player | `BuildApk`, `BuildAab`, `BuildMacOS`, `BuildWindows`, `BuildWindows64`, `BuildXCode`, `BuildWebGL` |
+| Prepare directories and files | `EnsureDirectoryExists`, `EnsureDirectoryEmpty`, `CopyDirectory`, `CopyFileToDirectory`, `DeleteFileOrDirectory` |
+| Package output | `CreateZipArchiveStep` |
+| Configure Android signing | `SetDebugKeystore`, `SetKeystorePassword`, `SetAlias` |
+| Configure iOS signing | `SetAutomaticSigning`, `SetManualProvisionProfile`, `SetTeamId` |
+| Work with Xcode output | `ModifyInfoPlist`, `ArchiveProject`, `ArchiveWorkspace`, `ExportIpa`, `UploadToAppStore` |
+| Set defines | `ScriptingDefineSymbols`, `ApplyDefines` |
+| Increment a numeric version | `BumpSemanticMajorValue`, `BumpSemanticMinorValue`, `BumpSemanticBuildValue`, `BumpSemanticRevisionValue` |
+
+Platform build steps expose their output path and supported options in the Inspector. Only `BuildResult.Succeeded` counts as a successful build. Signing, defines, version, and platform steps change project settings; those changes remain after the pipeline completes.
+
+## Custom build steps
+
+Save custom step scripts under an Editor folder, such as `Assets/Editor/Build`. If you use an assembly definition, make it Editor-only and reference `UniTools.Build`.
+
+Derive from `BuildStep` and implement `Task Execute()`. The step's position in the pipeline determines whether it runs before or after the player build. Use serialized fields for values you want to configure in the Inspector.
+
+### Example: wait before the next step
+
+Save this as `WaitBuildStep.cs`:
+
+```csharp
+using System;
+using System.Threading.Tasks;
+using UniTools.Build;
+using UnityEngine;
+
+[CreateAssetMenu(menuName = "Example/Build/Wait")]
+public sealed class WaitBuildStep : BuildStep
+{
+    [SerializeField] private int m_milliseconds = 250;
+
+    public override Task Execute()
+    {
+        if (m_milliseconds < 0)
+            throw new ArgumentOutOfRangeException(nameof(m_milliseconds));
+
+        return Task.Delay(m_milliseconds);
+    }
+}
+```
+
+Create the asset through **Create → Example → Build → Wait**, set its duration, and add it to your pipeline. Returning the delay's Task keeps the next step waiting. For an operation with several asynchronous actions, implement `async Task Execute()` and await each action.
+
+## Parameters and paths
+
+Create reusable values under **Create → UniTools → Parameters → String** or **Int**. A parameter's Inspector stores its default value; an optional options list lets you select from predefined values. Custom steps can reference the parameter asset and read its `Value`.
+
+In batch mode, the asset name determines its argument key: remove spaces, convert to lowercase, and add `--`.
+
+| Asset name | Argument | Example value |
+|---|---|---|
+| `Release Notes` | `--releasenotes` | `"Internal test build"` |
+| `Build Number` | `--buildnumber` | `42` |
+| `Build Defines` | `--builddefines` | `"MY_FEATURE;EXTRA_LOGGING"` |
+
+`Build Defines` in this table is a `ScriptingDefineSymbols` asset. Create it through **Create → UniTools → Steps → Defines → DefineSymbols** and assign it to an `ApplyDefines` step when you want to apply those symbols to a target group.
+
+An override applies to the matching parameter when a step reads it. Parameter keys must be unique and must not conflict with Unity arguments or `--pipeline`. Quote values containing spaces; `--key=value`, empty strings, and negative integers are supported. An invalid integer is an error.
+
+### Example: write release notes from a parameter
+
+Create a `StringBuildParameter` asset named `Release Notes`, then save this script as `WriteReleaseNotesStep.cs`:
+
+```csharp
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using UniTools.Build;
+using UnityEngine;
+
+[CreateAssetMenu(menuName = "Example/Build/Write Release Notes")]
+public sealed class WriteReleaseNotesStep : BuildStep
+{
+    [SerializeField] private StringBuildParameter m_notes = default;
+    [SerializeField] private PathProperty m_output =
+        new PathProperty("Builds/release-notes.txt");
+
+    public override Task Execute()
+    {
+        if (m_notes == null)
+            throw new InvalidOperationException("Assign the Release Notes parameter.");
+
+        string path = Path.GetFullPath(m_output.ToString());
+        Directory.CreateDirectory(Path.GetDirectoryName(path));
+        File.WriteAllText(path, m_notes.Value ?? string.Empty);
+        return Task.CompletedTask;
+    }
+}
+```
+
+Create the step asset, assign `Release Notes` to its **Notes** field, and add it to your pipeline. Editor runs use the parameter's saved value; a batch override such as `--releasenotes "Internal test build"` writes that text instead.
+
+### Example: reuse a versioned output directory
+
+A `PathProperty` can hold a string or reference a path asset. Create a **UniTools → Steps → IO → Composite Path** asset with these parts:
+
+| Part | Type | Value |
+|---|---|---|
+| 1 | String | `Builds` |
+| 2 | String | `Android` |
+| 3 | Scriptable | An `ApplicationVersion` asset created under **UniTools → Steps → Versioning** |
+
+With the project version set to `1.2.3`, the composite resolves to `Builds/Android/1.2.3`. Assign it to a directory step by selecting **Scriptable** in the path field. A `ScriptablePath` asset can store a shared fixed directory; `GenerateRandomPath` writes a unique subdirectory to a designated `ScriptablePath` asset.
+
+Version increment steps use `System.Version` with two to four numeric components, such as `1.2.3`. Incrementing one component preserves the others; prerelease suffixes such as `-beta` are not supported.
+
+## Batch mode
+
+Run these commands from the Unity project root. Use a pipeline's asset path or a unique exact asset name.
+
+### Example: run an Android pipeline with release notes
+
+```sh
+/path/to/Unity -batchmode -projectPath "$PWD" \
+  -executeMethod UniTools.Build.BatchModeBuilder.Execute \
+  --pipeline "Assets/Build/Android Development.asset" \
+  --releasenotes "Internal test build" \
+  -logFile -
+```
+
+The runner exits with **0** after all steps finish and **1** if a step fails or the pipeline cannot be found. **Do not pass `-quit`** to this entry point: the runner closes Unity after awaiting the pipeline. Set a timeout in your CI runner for jobs that take too long. See the [Unity command-line reference](https://docs.unity3d.com/6000.0/Documentation/Manual/EditorCommandLineArguments.html) for the standard Editor arguments.
+
+### Bash and PowerShell wrappers
+
+The wrappers in `BuildScripts/Unity-Hub/` locate a Hub-installed Editor using `ProjectSettings/ProjectVersion.txt`. You can also supply the executable as the first argument or set `UNITOOLS_UNITY_PATH`.
+
+Bash, using an explicit Editor executable:
+
+```sh
+mkdir -p Builds
+bash Packages/com.unitools.build/BuildScripts/Unity-Hub/build.sh \
+  "/Applications/Unity/Hub/Editor/6000.6.3f1/Unity.app/Contents/MacOS/Unity" \
+  --pipeline "Android Development" \
+  --releasenotes "Build from the command line" \
+  -logFile "Builds/pipeline.log"
+```
+
+PowerShell, using the installed Hub Editor:
+
+```powershell
+& .\Packages\com.unitools.build\BuildScripts\Unity-Hub\build.ps1 `
+  --pipeline "Android Development" `
+  --releasenotes "Build from PowerShell"
+```
+
+The PowerShell build writes `PipelineResults.log`; pass `-logFile` to select another file. `unity.sh` and `unity.ps1` are generic wrappers for other Editor commands. All wrappers wait for the Editor process and return its exit code.
+
+Use batch mode for a pipeline containing `ApplyDefines`. The runner remembers the next step, waits for the resulting compilation/domain reload, and continues. Custom asynchronous steps must finish their Task before triggering an assembly reload. Recovery after an Editor crash/restart and pipeline cancellation are not provided.
+
+## Command-line tools
+
+Open **Project Settings → UniTools → CLI** to inspect the registered external tools.
+
+<img width="341" alt="The UniTools CLI page selected in Unity Project Settings" src="https://user-images.githubusercontent.com/3504465/149134318-8d366d7e-4a7f-4358-bb42-61dc3d4e01e0.png">
+
+*The **CLI** page lists registered tools, their installation status, and any version or help information provided by the tool wrapper.*
+
+The package provides a shell through `CommandLine.Default`, a `PathResolver`, and wrappers for `Tar`, `Zip`, and `XCodeBuild`. XCodeBuild is registered when the iOS target is active. `Cli.Tool<T>()` returns the first registered tool of that type or null; `Cli.Tool(name)` looks up an exact registered executable key.
+
+### Example: execute a shell command
+
+```csharp
+using UniTools.Build;
+
+public static class ShellExample
+{
+    public static ToolResult Run()
+    {
+        ToolResult result = CommandLine.Default.Execute("echo Hello world");
+        if (result.ExitCode != 0)
+            throw new BuildStepFailedException(result.Error);
+
+        return result;
+    }
+}
+```
+
+`Execute` accepts a shell command and returns stdout, stderr, and the exit code. It reads both output streams concurrently but blocks its caller until the process exits. For long-running tools, account for that blocking behavior in your step.
+
+Use `CommandLine.QuoteArgument(value)` when inserting a literal path or value into a command. Raw commands and extra arguments remain shell expressions.
+
+### Example: register Node.js as a generic tool
+
+Install Node.js separately and make it available on Unity's PATH. Save this as an Editor script:
+
+```csharp
+using UniTools.Build;
+
+[assembly: CliTool("node")]
+
+public static class NodeVersionExample
+{
+    public static string GetVersion()
+    {
+        BaseCliTool node = Cli.Tool("node");
+        if (!node.IsInstalled)
+            throw new ToolNotInstalledException();
+
+        ToolResult result = node.Execute("--version");
+        if (result.ExitCode != 0)
+            throw new BuildStepFailedException(result.Error);
+
+        return result.Output.Trim();
+    }
+}
+```
+
+The assembly attribute registers the executable; `Cli.Tool("node")` retrieves its wrapper. As an alternative, specify an executable path instead of searching PATH:
+
+```csharp
+using UniTools.Build;
+
+[assembly: CliToolPath("node", "/absolute/path/to/node")]
+```
+
+Use one registration per executable. Choose either PATH discovery or an explicit path for this example.
+
+### Example: add a typed tool with a reusable command
+
+A typed tool can expose operations such as `RunScript` instead of repeating command construction in every step. Use this registration **instead of** either generic Node registration above. Save the types under an Editor folder:
+
+```csharp
+using UniTools.Build;
+
+[assembly: NodeTool]
+
+public sealed class NodeToolAttribute : BaseCliToolAttribute
+{
+    public NodeToolAttribute() : base("node") { }
+
+    public override BaseCliTool Create()
+    {
+        BaseCliTool executable = new CliToolAttribute(Executable).Create();
+        return new NodeTool(executable);
+    }
+}
+
+public sealed class NodeTool : BaseCliTool, ICliToolFriendlyName
+{
+    private readonly BaseCliTool m_executable;
+
+    public NodeTool(BaseCliTool executable) => m_executable = executable;
+
+    public string Name => "Node.js";
+    public override string Path => m_executable.Path;
+
+    public override ToolResult Execute(
+        string arguments = null, string workingDirectory = null)
+    {
+        return m_executable.Execute(arguments, workingDirectory);
+    }
+
+    public ToolResult RunScript(string scriptPath, string workingDirectory = null)
+    {
+        return Execute(CommandLine.QuoteArgument(scriptPath), workingDirectory);
+    }
+}
+```
+
+Then use the typed tool in a pipeline step. Save this as `RunNodeScriptStep.cs`:
 
 ```csharp
 using System.Threading.Tasks;
 using UniTools.Build;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Example/Wait")]
-public sealed class WaitBuildStep : BuildStep
+[CreateAssetMenu(menuName = "Example/Build/Run Node Script")]
+public sealed class RunNodeScriptStep : BuildStep
 {
-    [SerializeField] private int m_milliseconds = 250;
-    public override Task Execute() => Task.Delay(m_milliseconds);
+    [SerializeField] private PathProperty m_script =
+        new PathProperty("BuildTools/package-build.cjs");
+
+    public override Task Execute()
+    {
+        NodeTool node = Cli.Tool<NodeTool>();
+        if (node == null || !node.IsInstalled)
+            throw new ToolNotInstalledException();
+
+        ToolResult result = node.RunScript(m_script.ToString(), ProjectPath.Value);
+        if (result.ExitCode != 0)
+            throw new BuildStepFailedException(result.Error);
+
+        Debug.Log(result.Output);
+        return Task.CompletedTask;
+    }
 }
 ```
 
-`UnityBuildStepWithOptions` creates BuildPlayerOptions from enabled scenes and serialized output/development/clean-cache settings. Available steps cover APK/AAB, macOS/Windows, iOS Xcode, WebGL; archive/export/upload; signing; defines; numeric version increments; and paths/copy/delete/ZIP. Only `BuildResult.Succeeded` counts as success. The pipeline does not roll back changes automatically: signing/version/defines and platform settings remain changed.
+Assign a script that exists in your project. The example uses the Unity project root as the working directory, quotes the script path, and stops the pipeline if Node returns a nonzero exit code.
 
-`StringBuildParameter`, `IntBuildParameter`, and `ScriptingDefineSymbols` can be overridden in batch mode. A key is the asset name without spaces, converted to invariant lowercase and prefixed with `--`; for example, `Release Notes` → `--releasenotes`. Quote values containing spaces. The parser supports `--key=value`, empty strings, and negative numbers; a malformed integer is an error. Parameter keys must be unique and must not conflict with `--pipeline` or Unity arguments.
+## Unity environment and PATH
 
-Version steps use `System.Version`, with 2–4 numeric components and no SemVer suffixes; incrementing preserves the other components.
+Unity inherits its environment when the Editor starts. A tool available in your terminal may be missing from the Editor's PATH.
 
-## Batch mode
+<img width="349" alt="The Tools menu command for opening the UnityEnvironment window" src="https://user-images.githubusercontent.com/3504465/149128605-479aaba2-d7fc-429a-81e1-793b0360d29c.png">
 
-From the Unity project root:
+*Choose **Tools → CLI → UnityEnvironment** to inspect the environment variables visible to Unity, including the PATH used to locate external tools.*
 
-```sh
-/path/to/Unity -batchmode -projectPath "$PWD" \
-  -executeMethod UniTools.Build.BatchModeBuilder.Execute \
-  --pipeline "Assets/Build/Release Pipeline.asset" -logFile -
-```
+<img width="436" alt="The CLI settings page showing missing command-line tools in red" src="https://user-images.githubusercontent.com/3504465/149134823-29a80a53-b131-417c-b6d2-20b2f8edacba.png">
 
-A unique exact asset name can be supplied instead of a path. Duplicate names are rejected. The runner exits the Editor with **exit 0** only after all Tasks complete, or **exit 1** on error. **Do not pass `-quit`** to this entry point: it manages its own lifetime to await asynchronous completion. General rules for `-executeMethod`, `-batchmode`, and Editor termination are described in the [Unity CLI reference](https://docs.unity3d.com/6000.0/Documentation/Manual/EditorCommandLineArguments.html).
+*Tools shown in red could not be found at an existing absolute executable path. Install the required tool, check Unity's PATH, or provide an explicit path. The names shown here are from the original screenshot; your list depends on the registered tools.*
 
-The runner stores the pipeline GUID and next step in SessionState; after a synchronous `ApplyDefines`, it waits for compilation/domain reload and continues. A custom async step must not reload assemblies before its Task completes. Use batch mode for pipelines whose Editor Run would change defines. Recovery after a crash/restart and cancellation are not implemented; an external runner must provide the CI timeout.
-
-Wrappers in `BuildScripts/Unity-Hub/` can be run without copying them, but the working directory must be the Unity project root:
-
-```sh
-bash Packages/com.unitools.build/BuildScripts/Unity-Hub/build.sh \
-  "/path with spaces/to/Unity" --pipeline "Release Pipeline"
-```
-
-`build.sh` locates the installed Hub Editor using ProjectVersion.txt; an optional first argument or `UNITOOLS_UNITY_PATH` selects the executable. `unity.sh` is a generic wrapper; its optional first argument is an executable or a Unity version, and all remaining arguments are passed unchanged. PowerShell `build.ps1`/`unity.ps1` and `build.bat` use the Windows Hub path or `UNITOOLS_UNITY_PATH`, wait for the process to finish, and return its exit code. The PowerShell build writes `PipelineResults.log`.
-
-## CLI
-
-**Project Settings → UniTools → CLI** shows registered tools; **Tools → CLI → UnityEnvironment** shows the environment inherited by the Editor. `[assembly: PathVariable("/your/tool/directory")]` appends to the process PATH using the standard separator. Do not add machine-specific paths to a reusable package.
+You can append a directory to Unity's process PATH with an assembly attribute in an Editor script:
 
 ```csharp
-ToolResult result = CommandLine.Default.Execute("echo Hello");
-if (result.ExitCode != 0) throw new BuildStepFailedException(result.Error);
+using UniTools.Build;
+
+[assembly: PathVariable("/your/tool/directory")]
 ```
 
-`CommandLine.Execute` runs a shell command synchronously. stdout/stderr are read concurrently; a long command still blocks its caller, and timeout/cancellation is not built in. Wrap literal values/paths with `CommandLine.QuoteArgument(value)`. Raw command strings and `Archive.m_extraArgs` must be trusted configuration. Windows cmd has its own expansion rules; QuoteArgument does not make arbitrary shell input safe.
+Use a real directory on your machine. Recompile/reopen Unity after adding registrations or changing its startup environment; call `Cli.Refresh()` to repeat discovery within the current session. `IsInstalled` checks whether the executable file exists, while executing it and checking `ExitCode` confirms whether the command succeeds.
 
-`Cli.Tool<T>()` returns the first registered tool of that type or null; `Cli.Tool(name)` requires the exact registered executable key. Available tools are the shell, path resolver, Tar, Zip, and XCodeBuild (registered only on the iOS target). `IsInstalled` checks file existence, not whether the executable can run successfully.
+## Troubleshooting
 
-For a custom tool, derive from `BaseCliTool`, create a `BaseCliToolAttribute` with `Create()`, and add an assembly attribute. For a generic tool, use `[assembly: CliTool("executable")]` or `[assembly: CliToolPath("executable", "/absolute/path")]`. Shell paths containing spaces are supported. Check `ToolResult.ExitCode` in every build step.
+| Symptom | What to check |
+|---|---|
+| Pipeline cannot be found | Pass the asset path or a unique exact asset name. Duplicate names require a path. |
+| No enabled scenes | Enable the scenes needed by your player in the project's build scene list. |
+| Tool is not found | Check the CLI settings page, Unity's PATH, and the executable's installed location. |
+| A step fails but later output is missing | The pipeline stops on errors. Check the failing step's Console entry or CLI stderr. |
+| Copy operation rejects its paths | The source must exist, and source/destination must not overlap or contain one another. |
+| ZIP output is rejected | Use a `.zip` output path outside the source directory, such as `../output.zip`. |
+| Defines interrupt an Editor run | Run that pipeline in batch mode so it can continue after compilation/domain reload. |
 
-IO copy operations validate the source before deleting the destination and reject overlapping paths. The ZIP step uses .NET, includes hidden files, and creates an archive outside the source tree. `m_archiveFileName` can be absolute or relative to the source folder, for example `../output.zip`. Output inside the source is rejected; an existing ZIP is replaced rather than updated with stale entries. Authors must check symlink aliases themselves.
+## License
 
-## Review and verification — 2026-10-12
-
-Reviewed from upstream `master`, commit `0e8f482178de0c3b2a8c8ff0c6631d0631cc3417`: fixed async callbacks/CI exit and reload continuation, parsing/quoting, process pipe deadlocks/disposal, PATH, build results/disabled scenes, null configuration, copy overlap, ZIP, iOS plist parsing, and obsolete Unity APIs. Public type/assembly identities, the version, and original GUIDs are preserved. Outdated README examples using Pre/Post classes were replaced with the actual API.
-
-Verified with Unity `6000.6.3f1` on macOS:
-
-- Host compilation and `dotnet build UniTools.Build.csproj --no-restore` (.NET SDK `10.0.401`): **0 warnings / 0 errors**. The current Unity Console also reports 0/0; the history of transient compiler/Pipeline diagnostics was retained.
-- A minimal host containing only this package, without game/Test Framework dependencies: Standalone Editor compilation reports **0 compiler warnings/errors** after the UAC0005 fix. An actual `BuildMacOS` batch run produced `Smoke.app` (72 MB), with exit **0**; a disabled scene with a nonexistent path was excluded from build options.
-- **51/51** temporary behavioral checks: awaited execution order/stopping/skip/null/concurrent Run, parser/parameters, IO overlap, ZIP hidden files and overwrite, shell quoting, missing executables, stdout/stderr including 128 KiB stderr without deadlock, and PATH. **16/16** iOS checks: provisioning XML, the first TeamIdentifier, invalid input, archive/export arguments containing spaces and literal shell characters, and fake Xcode failure/missing-tool behavior.
-- **10/10** Bash wrapper checks: exact argv with spaces, optional executable/version, log overrides, and exit propagation; both scripts pass `bash -n` with the standard macOS Bash.
-- Actual batch launches: async success → **0**; failed step → **1**, without executing the next marker; missing pipeline → **1**; ApplyDefines → compilation/domain reload → next step → **0**, with before/after each executed once.
-- Consumer game-1: **217/217 Prototype1.Core.Tests**, 0 failed/skipped; Android (**50 assemblies**) and iOS (**48**) player scripts compile with `Prototype1.Core`/`Prototype1.Runtime` and without `UniTools.Build`/test assemblies. IDE projects were regenerated through Unity.
-- All **201 original .meta** files are byte-identical to upstream; the package version and assembly GUID are unchanged.
-
-Windows/PowerShell, Linux, and older Unity Editors were not run. iOS CLI checks used a local fake executable: no signing credentials, App Store uploads, or device QA were involved. The minimal host's build artifact and the consumer's player-script compilation do not constitute a mobile release of the game. Temporary fixtures/outputs are not part of the package.
-
-Fixes were saved in a separate review commit on top of upstream master; the consumer's Git state pins it through a gitlink. The integration permission granted on 2026-10-12 does not authorize future Git operations.
+[MIT](LICENSE).
